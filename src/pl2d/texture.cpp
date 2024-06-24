@@ -6,46 +6,46 @@
 
 namespace pl2d {
 
-Drawable::Drawable(u32 width, u32 height)
+Texture::Texture(u32 width, u32 height)
     : width(width), height(height), pitch(width), size(width * height) {
   own_pixels   = true;
   alloced_size = size;
   pixels       = (Pixel *)malloc(size * sizeof(Pixel));
 }
 
-Drawable::Drawable(u32 width, u32 height, u32 pitch)
+Texture::Texture(u32 width, u32 height, u32 pitch)
     : width(width), height(height), pitch(pitch), size(pitch * height) {
   own_pixels   = true;
   alloced_size = size;
   pixels       = (Pixel *)malloc(size * sizeof(Pixel));
 }
 
-Drawable::Drawable(Pixel *pixels, u32 width, u32 height)
+Texture::Texture(Pixel *pixels, u32 width, u32 height)
     : width(width), height(height), pitch(width), size(width * height) {
   this->pixels = pixels;
 }
 
-Drawable::Drawable(Pixel *pixels, u32 width, u32 height, u32 pitch)
+Texture::Texture(Pixel *pixels, u32 width, u32 height, u32 pitch)
     : width(width), height(height), pitch(pitch), size(pitch * height) {
   this->pixels = pixels;
 }
 
-Drawable::~Drawable() {
+Texture::~Texture() {
   if (own_pixels) free(pixels);
 }
 
-auto Drawable::copy() -> Drawable * {
-  auto *d = new Drawable(width, height, pitch);
+auto Texture::copy() -> Texture * {
+  auto *d = new Texture(width, height, pitch);
   if (d == null) return null;
   d->copy_from(*this);
   return d;
 }
 
-auto Drawable::copy_to(Drawable &d) const -> bool {
+auto Texture::copy_to(Texture &d) const -> bool {
   return d.copy_from(*this);
 }
 
-auto Drawable::copy_from(const Drawable &d) -> bool {
+auto Texture::copy_from(const Texture &d) -> bool {
   if (&d == this) return true;
   if (d.width != width || d.height != height) return false;
   if (d.pitch == pitch) {
@@ -58,37 +58,37 @@ auto Drawable::copy_from(const Drawable &d) -> bool {
   return true;
 }
 
-auto Drawable::clear() -> Drawable & {
+auto Texture::clear() -> Texture & {
   // 重置为透明
   memset(pixels, 0, size * sizeof(Pixel));
   return *this;
 }
 
-auto Drawable::get(size_t x, size_t y) const -> const Pixel {
+auto Texture::get(size_t x, size_t y) const -> const Pixel {
   return pixels[y * pitch + x];
 }
 
-auto Drawable::set(size_t x, size_t y, const Pixel &p) -> Drawable & {
+auto Texture::set(size_t x, size_t y, const Pixel &p) -> Texture & {
   pixels[y * pitch + x] = p;
   return *this;
 }
 
-auto Drawable::set(size_t x, size_t y, byte r, byte g, byte b) -> Drawable & {
+auto Texture::set(size_t x, size_t y, byte r, byte g, byte b) -> Texture & {
   pixels[y * pitch + x] = {r, g, b, 255};
   return *this;
 }
 
-auto Drawable::set(size_t x, size_t y, byte r, byte g, byte b, byte a) -> Drawable & {
+auto Texture::set(size_t x, size_t y, byte r, byte g, byte b, byte a) -> Texture & {
   pixels[y * pitch + x] = {r, g, b, a};
   return *this;
 }
 
-auto Drawable::set(size_t x, size_t y, float r, float g, float b) -> Drawable & {
+auto Texture::set(size_t x, size_t y, float r, float g, float b) -> Texture & {
   pixels[y * pitch + x] = PixelF{r, g, b, 1}.to_u8();
   return *this;
 }
 
-auto Drawable::set(size_t x, size_t y, float r, float g, float b, float a) -> Drawable & {
+auto Texture::set(size_t x, size_t y, float r, float g, float b, float a) -> Texture & {
   pixels[y * pitch + x] = PixelF{r, g, b, a}.to_u8();
   return *this;
 }

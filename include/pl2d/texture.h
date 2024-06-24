@@ -3,4 +3,4 @@
 #include <type.h>
 
 typedef struct {
-} Drawable;
+} Texture;

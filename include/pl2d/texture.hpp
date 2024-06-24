@@ -3,9 +3,9 @@
 
 namespace pl2d {
 
-struct Drawable;
+struct Texture;
 
-struct Drawable {
+struct Texture {
   Pixel *pixels       = null;  // 储存实际分配的大小 像素数而不是字节数
   bool   own_pixels   = false; // pixels 是否为该结构体所有
   u32    width        = 0;     // 宽度
@@ -14,14 +14,14 @@ struct Drawable {
   u32    size         = 0;     // 储存 height * pitch 而不是占用的字节数
   u32    alloced_size = 0;     // 实际分配的内存 pixels数
 
-  Drawable() = default;
-  Drawable(u32 width, u32 height);
-  Drawable(u32 width, u32 height, u32 pitch);
-  Drawable(Pixel *pixels, u32 width, u32 height);
-  Drawable(Pixel *pixels, u32 width, u32 height, u32 pitch);
-  Drawable(const Drawable &) = delete;
-  Drawable(Drawable &&)      = default;
-  ~Drawable();
+  Texture() = default;
+  Texture(u32 width, u32 height);
+  Texture(u32 width, u32 height, u32 pitch);
+  Texture(Pixel *pixels, u32 width, u32 height);
+  Texture(Pixel *pixels, u32 width, u32 height, u32 pitch);
+  Texture(const Texture &) = delete;
+  Texture(Texture &&)      = default;
+  ~Texture();
 
   auto ready() const -> bool {
     return pixels != null;
@@ -40,17 +40,17 @@ struct Drawable {
     return pixels[y * pitch + x];
   }
 
-  auto copy() -> Drawable *;
-  auto copy_to(Drawable &d) const -> bool;
-  auto copy_from(const Drawable &d) -> bool;
+  auto copy() -> Texture *;
+  auto copy_to(Texture &d) const -> bool;
+  auto copy_from(const Texture &d) -> bool;
 
-  auto clear() -> Drawable &;
+  auto clear() -> Texture &;
   auto get(size_t x, size_t y) const -> const Pixel;
-  auto set(size_t x, size_t y, const Pixel &p) -> Drawable &;
-  auto set(size_t x, size_t y, byte r, byte g, byte b) -> Drawable &;
-  auto set(size_t x, size_t y, byte r, byte g, byte b, byte a) -> Drawable &;
-  auto set(size_t x, size_t y, float r, float g, float b) -> Drawable &;
-  auto set(size_t x, size_t y, float r, float g, float b, float a) -> Drawable &;
+  auto set(size_t x, size_t y, const Pixel &p) -> Texture &;
+  auto set(size_t x, size_t y, byte r, byte g, byte b) -> Texture &;
+  auto set(size_t x, size_t y, byte r, byte g, byte b, byte a) -> Texture &;
+  auto set(size_t x, size_t y, float r, float g, float b) -> Texture &;
+  auto set(size_t x, size_t y, float r, float g, float b, float a) -> Texture &;
 
   void line();
   void trangle();
