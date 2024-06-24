@@ -22,7 +22,9 @@ public:
     return i;
   }
 
-  auto operator<=>(const BaseStringIterator &it) {}
+  auto operator<=>(const BaseStringIterator &it) {
+    return i - it.i;
+  }
 
   auto operator=(size_t i) {
     this->i = i;

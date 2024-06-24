@@ -4,9 +4,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "pl2d/drawable.h"
 #include "pl2d/matrix.h"
 #include "pl2d/pixel.h"
+#include "pl2d/texture.h"
 #ifdef __cplusplus
 }
 #endif

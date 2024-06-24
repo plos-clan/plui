@@ -3,9 +3,9 @@
 
 namespace pl2d {
 
-struct Texture;
+__Pclass__(Texture);
 
-struct Texture {
+struct Texture : private RefCount {
   Pixel *pixels       = null;  // 储存实际分配的大小 像素数而不是字节数
   bool   own_pixels   = false; // pixels 是否为该结构体所有
   u32    width        = 0;     // 宽度

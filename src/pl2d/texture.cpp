@@ -1,5 +1,3 @@
-#include "pl2d/drawable.hpp"
-#include "pl2d/pixel.hpp"
 #include <pl2d.hpp>
 
 #include <cstring>
