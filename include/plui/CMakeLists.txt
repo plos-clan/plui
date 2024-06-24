@@ -1,0 +1,6 @@
+mkheader_h(both)
+mkheader_hpp(both)
+mkheader_h(client)
+mkheader_hpp(client)
+mkheader_h(server)
+mkheader_hpp(server)
