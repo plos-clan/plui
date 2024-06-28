@@ -1,33 +1,54 @@
-#include "pl2d/pixel.hpp"
-#include "cpp/math.hpp"
 #include <c.h>
 #include <cpp.hpp>
 #include <define.h>
 #include <pl2d.hpp>
 #include <type.hpp>
 
-#define FAST_COLOR_TRANSFORM 1
-
-#ifndef FAST_COLOR_TRANSFORM
-#  define FAST_COLOR_TRANSFORM 0
-#endif
-
 namespace pl2d {
 
-// gamma 函数浮点输入范围均为 0-1
-namespace gamma {
+auto gamma(f32 x, f32 g) -> f32 {
+  return cpp::pow(x, g);
+}
 
-finline auto rgb2xyz(float x) -> float {
-  return (x > 0.04045f) ? powf((x + 0.055f) / 1.055f, 2.4f) : (x / 12.92f);
+auto gamma(f64 x, f64 g) -> f64 {
+  return cpp::pow(x, g);
 }
-finline auto xyz2rgb(float x) -> float {
-  return (x > 0.0031308f) ? (1.055f * powf(x, 1 / 2.4f) - 0.055f) : (12.92f * x);
+
+auto igamma(f32 x, f32 g) -> f32 {
+  return cpp::pow(x, 1.f / g);
 }
-finline auto xyz2lab(float x) -> float {
-  return (x > 0.008856f) ? cbrtf(x) : ((903.3f * x + 16.f) / 116.f);
+
+auto igamma(f64 x, f64 g) -> f64 {
+  return cpp::pow(x, 1.f / g);
 }
-finline auto lab2xyz(float x) -> float {
-  return (x > 0.206893f) ? cubef(x) : (((x * 116.f) - 16.f) / 903.3f);
+
+// gamma 函数浮点输入范围均为 0-1
+namespace G {
+
+finline auto rgb2xyz(f32 x) -> f32 {
+  return (x > 0.04045f) ? cpp::pow((x + 0.055f) / 1.055f, 2.4f) : (x / 12.92f);
+}
+finline auto xyz2rgb(f32 x) -> f32 {
+  return (x > 0.0031308f) ? (1.055f * cpp::pow(x, 1.f / 2.4f) - 0.055f) : (12.92f * x);
+}
+finline auto xyz2lab(f32 x) -> f32 {
+  return (x > 0.008856f) ? cpp::cbrt(x) : ((903.3f * x + 16.f) / 116.f);
+}
+finline auto lab2xyz(f32 x) -> f32 {
+  return (x > 0.206893f) ? cpp::cube(x) : (((x * 116.f) - 16.f) / 903.3f);
+}
+
+finline auto rgb2xyz(f64 x) -> f64 {
+  return (x > 0.04045) ? cpp::pow((x + 0.055) / 1.055, 2.4) : (x / 12.92);
+}
+finline auto xyz2rgb(f64 x) -> f64 {
+  return (x > 0.0031308) ? (1.055 * cpp::pow(x, 1 / 2.4) - 0.055) : (12.92 * x);
+}
+finline auto xyz2lab(f64 x) -> f64 {
+  return (x > 0.008856) ? cpp::cbrt(x) : ((903.3f * x + 16.f) / 116.f);
+}
+finline auto lab2xyz(f64 x) -> f64 {
+  return (x > 0.206893) ? cpp::cube(x) : (((x * 116.) - 16.) / 903.3);
 }
 
 // finline auto xyz2luv(float x) -> float {
@@ -95,7 +116,7 @@ finline auto lab2xyz(u32 x) -> float {
   return lab2xyz(x / 4294967295.f);
 }
 
-} // namespace gamma
+} // namespace G
 
 //* ----------------------------------------------------------------------------------------------------
 //; 类型转换
@@ -384,9 +405,9 @@ void PixelD::RGB2Grayscale() {
 //.
 
 void PixelB::RGB2LAB() {
-  float r = gamma::rgb2xyz(this->r);
-  float g = gamma::rgb2xyz(this->g);
-  float b = gamma::rgb2xyz(this->b);
+  float r = G::rgb2xyz(this->r);
+  float g = G::rgb2xyz(this->g);
+  float b = G::rgb2xyz(this->b);
 
   float x = r * 0.4124564f + g * 0.3575761f + b * 0.1804375f;
   float y = r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
@@ -396,9 +417,9 @@ void PixelB::RGB2LAB() {
   y /= 1.0f;
   z /= 1.088754f;
 
-  x = gamma::xyz2lab(x);
-  y = gamma::xyz2lab(y);
-  z = gamma::xyz2lab(z);
+  x = G::xyz2lab(x);
+  y = G::xyz2lab(y);
+  z = G::xyz2lab(z);
 
   this->r = y * 255;       // l
   this->g = (x - y) * 127; // a
@@ -410,9 +431,9 @@ void PixelB::LAB2RGB() {
   float x = y + this->g; // a
   float z = y - this->b; // b
 
-  x = gamma::lab2xyz(x);
-  y = gamma::lab2xyz(y);
-  z = gamma::lab2xyz(z);
+  x = G::lab2xyz(x);
+  y = G::lab2xyz(y);
+  z = G::lab2xyz(z);
 
   x *= 0.950456f;
   y *= 1.0f;
@@ -422,9 +443,9 @@ void PixelB::LAB2RGB() {
   float g = x * -0.9692660f + y * 1.8760108f + z * 0.0415560f;
   float b = x * 0.0556434f + y * -0.2040259f + z * 1.0572252f;
 
-  this->r = gamma::xyz2rgb(r);
-  this->g = gamma::xyz2rgb(g);
-  this->b = gamma::xyz2rgb(b);
+  this->r = G::xyz2rgb(r);
+  this->g = G::xyz2rgb(g);
+  this->b = G::xyz2rgb(b);
 }
 
 void PixelB::RGB2HSV() {
@@ -701,9 +722,9 @@ void PixelF::HSL2RGB() {
 }
 
 void PixelF::RGB2LAB() {
-  float r = gamma::rgb2xyz(this->r);
-  float g = gamma::rgb2xyz(this->g);
-  float b = gamma::rgb2xyz(this->b);
+  float r = G::rgb2xyz(this->r);
+  float g = G::rgb2xyz(this->g);
+  float b = G::rgb2xyz(this->b);
 
   float x = r * 0.4124564f + g * 0.3575761f + b * 0.1804375f;
   float y = r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
@@ -713,9 +734,9 @@ void PixelF::RGB2LAB() {
   y /= 1.0f;
   z /= 1.088754f;
 
-  x = gamma::xyz2lab(x);
-  y = gamma::xyz2lab(y);
-  z = gamma::xyz2lab(z);
+  x = G::xyz2lab(x);
+  y = G::xyz2lab(y);
+  z = G::xyz2lab(z);
 
   this->r = y;     // l
   this->g = x - y; // a
@@ -727,9 +748,9 @@ void PixelF::LAB2RGB() {
   float x = y + this->g; // a
   float z = y - this->b; // b
 
-  x = gamma::lab2xyz(x);
-  y = gamma::lab2xyz(y);
-  z = gamma::lab2xyz(z);
+  x = G::lab2xyz(x);
+  y = G::lab2xyz(y);
+  z = G::lab2xyz(z);
 
   x *= 0.950456f;
   y *= 1.0f;
@@ -739,9 +760,9 @@ void PixelF::LAB2RGB() {
   float g = x * -0.9692660f + y * 1.8760108f + z * 0.0415560f;
   float b = x * 0.0556434f + y * -0.2040259f + z * 1.0572252f;
 
-  this->r = gamma::xyz2rgb(r);
-  this->g = gamma::xyz2rgb(g);
-  this->b = gamma::xyz2rgb(b);
+  this->r = G::xyz2rgb(r);
+  this->g = G::xyz2rgb(g);
+  this->b = G::xyz2rgb(b);
 }
 
 //;  未实现

@@ -1,6 +1,5 @@
-#ifndef NO_STD
-#  define NO_STD 1
-#endif
+#pragma once
+#include <config.h>
 
 #define _rest __restrict
 
@@ -180,7 +179,11 @@
     static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, #T " 必须是数字")
 #endif
 
-#define SAFE_API
+#ifdef STD_SAFE_API
+#  define __std_safe__(code) ((void)({code}))
+#else
+#  define __std_safe__(code) ((void)(0))
+#endif
 
 #ifdef SAFE_API
 #  define __safe__(code) ((void)({code}))

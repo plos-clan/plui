@@ -9,7 +9,7 @@ void *memcpy(void *_rest _d, const void *_rest _s, size_t _n) {
   byte       *d = _d;
   const byte *s = _s;
   const byte *e = _s + _n;
-  __safe__({
+  __std_safe__({
     if (!d || !s) return null;
     if (d + _n < d || e < s) return null;
   });
@@ -27,7 +27,7 @@ void *memmove(void *_d, const void *_s, size_t _n) {
   byte       *d = _d;
   const byte *s = _s;
   const byte *e = _s + _n;
-  __safe__({
+  __std_safe__({
     if (!d || !s) return null;
     if (d + _n < d || e < s) return null;
   });
@@ -50,7 +50,7 @@ void *memset(void *_s, int _c, size_t _n) {
   byte      *s = _s;
   byte      *e = _s + _n;
   const byte c = _c;
-  __safe__({
+  __std_safe__({
     if (!s) return null;
     if (e < s) return null;
   });
@@ -109,7 +109,7 @@ char *strncat(char *_rest __dest, cstr _rest __src, size_t __n) {}
 /* Compare S1 and S2.  */
 //? 已完成
 int strcmp(cstr _s1, cstr _s2) {
-#ifdef __safe__
+#ifdef __std_safe__
   if (!_s1 && !_s2) return 0;
   if (!_s1) return -1;
   if (!_s2) return 1;
@@ -140,7 +140,7 @@ void *memccpy(void *_rest _d, const void *_rest _s, int _c, size_t _n) {
   const byte *s = _s;
   const byte *e = _s + _n;
   const byte  c = _c;
-  __safe__({
+  __std_safe__({
     if (!d || !s) return null;
     if (d + _n < d || e < s) return null;
   });
@@ -154,7 +154,7 @@ void *memccpy(void *_rest _d, const void *_rest _s, int _c, size_t _n) {
 void *rawmemchr(const void *_s, int _c) {
   const byte *s = _s;
   const byte  c = _c;
-#ifdef __safe__
+#ifdef __std_safe__
   if (!s) return null;
 #endif
   for (; *s; s++)
@@ -167,7 +167,7 @@ void *memrchr(const void *_s, int _c, size_t _n) {
   const byte *s = _s;
   const byte *e = _s + _n;
   const byte  c = _c;
-#ifdef __safe__
+#ifdef __std_safe__
   if (!s) return null;
 #endif
   for (; s < e; s++)
@@ -184,7 +184,7 @@ char toupper(char c) {
 // case-insensitive
 // 不区分大小写的字符串比较函数
 int strcmp_ci(cstr _s1, cstr _s2) {
-  __safe__({
+  __std_safe__({
     if (!_s1 && !_s2) return 0;
     if (!_s1) return -1;
     if (!_s2) return 1;
