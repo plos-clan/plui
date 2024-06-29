@@ -30,6 +30,13 @@ auto max(T x, Args... args) -> T {
   return x > y ? x : y;
 }
 
+template <typename T>
+auto clamp(const T &v, const T &min, const T &max) -> const T & {
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
+}
+
 // --------------------------------------------------
 //; 求和
 

@@ -1,6 +1,9 @@
 #include <define.h>
 #include <type.h>
 
+#pragma GCC diagnostic   ignored "-Wall"
+#pragma clang diagnostic ignored "-Weverything"
+
 //? 已完成
 //+ 将 len 字节的数据从 src 复制到 dst
 //@ memcpy 函数是在 C标准库 中定义的函数，它的作用是从源缓冲区复制 n

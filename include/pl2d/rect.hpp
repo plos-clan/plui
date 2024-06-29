@@ -7,28 +7,15 @@ namespace pl2d {
 
 template <typename T>
 struct BaseRow {
-  T x = 0, y1 = 0, y2 = 0;
-
-  BaseRow(T x, T y1, T y2) : x(x) {
-    cpp::exch_if(y1 > y2, y1, y2);
-    this->y1 = y1, this->y2 = y2;
-  }
-
-  auto left() -> BasePoint2<T> {
-    return {x, y1};
-  }
-  auto right() -> BasePoint2<T> {
-    return {x, y2};
-  }
-};
-
-template <typename T>
-struct BaseCol {
   T x1 = 0, x2 = 0, y = 0;
 
-  BaseCol(T x1, T x2, T y) : y(y) {
+  BaseRow(T x1, T x2, T y) : y(y) {
     cpp::exch_if(x1 > x2, x1, x2);
     this->x1 = x1, this->x2 = x2;
+  }
+
+  auto size() -> size_t {
+    return (x2 - x1 + 1);
   }
 
   auto left() -> BasePoint2<T> {
@@ -40,15 +27,43 @@ struct BaseCol {
 };
 
 template <typename T>
+struct BaseCol {
+  T x = 0, y1 = 0, y2 = 0;
+
+  BaseCol(T x, T y1, T y2) : x(x) {
+    cpp::exch_if(y1 > y2, y1, y2);
+    this->y1 = y1, this->y2 = y2;
+  }
+
+  auto size() -> size_t {
+    return (y2 - y1 + 1);
+  }
+
+  auto top() -> BasePoint2<T> {
+    return {x, y1};
+  }
+  auto bottom() -> BasePoint2<T> {
+    return {x, y2};
+  }
+};
+
+template <typename T>
 struct BaseRect {
   T x1 = 0, y1 = 0; // 左上角坐标
   T x2 = 0, y2 = 0; // 右下角坐标
 
+  BaseRect() = default;
   BaseRect(T x1, T y1, T x2, T y2) {
     cpp::exch_if(x1 > x2, x1, x2);
     cpp::exch_if(y1 > y2, y1, y2);
     this->x1 = x1, this->y1 = y1;
     this->x2 = x2, this->y2 = y2;
+  }
+  BaseRect(const BaseRect &)     = default;
+  BaseRect(BaseRect &&) noexcept = default;
+
+  auto size() -> size_t {
+    return (x2 - x1 + 1) * (y2 - y1 + 1);
   }
 
   auto translate(T x, T y) -> BaseRect & {
@@ -71,6 +86,25 @@ struct BaseRect {
   auto bottomright() -> BasePoint2<T> {
     return {x2, y2};
   }
+
+  void contain(T x, T y) {
+    x1 = cpp::min(x1, x);
+    y1 = cpp::min(y1, y);
+    x2 = cpp::max(x2, x);
+    y2 = cpp::max(y2, y);
+  }
+  void contain(const BasePoint2<T> &p) {
+    contain(p.x, p.y);
+  }
+
+  auto contains(T x, T y) -> bool {
+    if (x < x1 || x > x2) return false;
+    if (y < y1 || y > y2) return false;
+    return true;
+  }
+  auto contains(const BasePoint2<T> &p) -> bool {
+    return contains(p.x, p.y);
+  }
 };
 
 using RowI = BaseRow<i32>;
@@ -90,126 +124,115 @@ using Rect  = RectI;
 
 class ItRowI : RowI {
 public:
+  using RowI::RowI;
+
   class Iterator {
   private:
-    bool ended = false;
-    i32;
+    i32 x1, x2, y;
 
   public:
-    Iterator() : ended(true) {}
-    Iterator(Point2I p1, Point2I p2) {
-      x1 = p1.x;
-      y1 = p1.y;
-      x2 = p2.x;
-      y2 = p2.y;
-
-      dx  = cpp::abs(x2 - x1);
-      dy  = cpp::abs(y2 - y1);
-      sx  = (x1 < x2) ? 1 : -1;
-      sy  = (y1 < y2) ? 1 : -1;
-      err = dx - dy;
-    }
+    Iterator(i32 x1, i32 x2, i32 y) : x1(x1), x2(x2), y(y) {}
 
     auto operator*() -> Point2I {
-      return {x1, y1};
+      return {x1, y};
     }
 
     auto operator++() -> Iterator & {
-      if (ended) return *this;
-      if (x1 == x2 && y1 == y2) {
-        ended = true;
-        return *this;
-      }
-
-      if (2 * err > -dy) {
-        err -= dy;
-        x1  += sx;
-      }
-      if (2 * err < dx) {
-        err += dx;
-        y1  += sy;
-      }
+      x1++;
       return *this;
     }
 
-    auto operator==(const Iterator &other) const -> bool {
-      return ended == other.ended;
+    auto operator==(const Iterator &it) const -> bool {
+      return x1 == it.x1;
     }
 
-    auto operator!=(const Iterator &other) const -> bool {
-      return ended != other.ended;
+    auto operator!=(const Iterator &it) const -> bool {
+      return x1 != it.x1;
     }
   };
 
   auto begin() const -> Iterator {
-    return {p1, p2};
+    return {x1, x2, y};
   }
 
   auto end() const -> Iterator {
-    return {};
+    return {x2 + 1, x2, y};
+  }
+};
+
+class ItColI : ColI {
+public:
+  using ColI::ColI;
+
+  class Iterator {
+  private:
+    i32 x, y1, y2;
+
+  public:
+    Iterator(i32 x, i32 y1, i32 y2) : x(x), y1(y1), y2(y2) {}
+
+    auto operator*() -> Point2I {
+      return {x, y1};
+    }
+
+    auto operator++() -> Iterator & {
+      y1++;
+      return *this;
+    }
+
+    auto operator==(const Iterator &it) const -> bool {
+      return y1 == it.y1;
+    }
+
+    auto operator!=(const Iterator &it) const -> bool {
+      return y1 != it.y1;
+    }
+  };
+
+  auto begin() const -> Iterator {
+    return {x, y1, y2};
+  }
+
+  auto end() const -> Iterator {
+    return {x, y2 + 1, y2};
   }
 };
 
 class ItRectI : RectI {
 public:
+  ItRectI(const RectI &r) : RectI(r.x1, r.y1, r.x2, r.y2) {}
+
   class Iterator {
   private:
-    bool ended = false;
-    i32  x1, y1, x2, y2;
-    i32  dx, dy, sx, sy, err;
+    i32 x1, x2, y1, y2;
 
   public:
-    Iterator() : ended(true) {}
-    Iterator(Point2I p1, Point2I p2) {
-      x1 = p1.x;
-      y1 = p1.y;
-      x2 = p2.x;
-      y2 = p2.y;
+    Iterator(i32 x1, i32 x2, i32 y1, i32 y2) : x1(x1), x2(x2), y1(y1), y2(y2) {}
 
-      dx  = cpp::abs(x2 - x1);
-      dy  = cpp::abs(y2 - y1);
-      sx  = (x1 < x2) ? 1 : -1;
-      sy  = (y1 < y2) ? 1 : -1;
-      err = dx - dy;
-    }
-
-    auto operator*() -> Point2I {
-      return {x1, y1};
+    auto operator*() -> ItRowI {
+      return {x1, x2, y1};
     }
 
     auto operator++() -> Iterator & {
-      if (ended) return *this;
-      if (x1 == x2 && y1 == y2) {
-        ended = true;
-        return *this;
-      }
-
-      if (2 * err > -dy) {
-        err -= dy;
-        x1  += sx;
-      }
-      if (2 * err < dx) {
-        err += dx;
-        y1  += sy;
-      }
+      y1++;
       return *this;
     }
 
-    auto operator==(const Iterator &other) const -> bool {
-      return ended == other.ended;
+    auto operator==(const Iterator &it) const -> bool {
+      return y1 == it.y1;
     }
 
-    auto operator!=(const Iterator &other) const -> bool {
-      return ended != other.ended;
+    auto operator!=(const Iterator &it) const -> bool {
+      return y1 != it.y1;
     }
   };
 
   auto begin() const -> Iterator {
-    return {p1, p2};
+    return {x1, x2, y1, y2};
   }
 
   auto end() const -> Iterator {
-    return {};
+    return {x1, x2, y2 + 1, y2};
   }
 };
 

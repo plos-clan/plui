@@ -281,12 +281,12 @@ public:
       return *this;
     }
 
-    auto operator==(const Iterator &other) const -> bool {
-      return ended == other.ended;
+    auto operator==(const Iterator &it) const -> bool {
+      return ended == it.ended;
     }
 
-    auto operator!=(const Iterator &other) const -> bool {
-      return ended != other.ended;
+    auto operator!=(const Iterator &it) const -> bool {
+      return ended != it.ended;
     }
   };
 

@@ -56,6 +56,12 @@ struct BasePixel {
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
 
+  operator PixelB();
+  operator PixelS();
+  operator PixelI();
+  operator PixelF();
+  operator PixelD();
+
   void RGB2Grayscale();
   void RGB2HSV();
   void HSV2RGB();
@@ -74,6 +80,9 @@ struct BasePixel {
 };
 
 struct PixelB : BasePixel<u8> {
+  PixelB(const BasePixel<u8> &p) : BasePixel<u8>(p) {}
+  PixelB(BasePixel<u8> &&p) : BasePixel<u8>(cpp::move(p)) {}
+
   void        mix(const PixelB &s);
   static auto mix(const PixelB &c1, const PixelB &c2) -> PixelB;
 

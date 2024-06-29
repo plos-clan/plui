@@ -1,9 +1,6 @@
-#include <copi143/define.h>
-#include <copi143/pdui.h>
-#include <copi143/type.h>
-
-#include <stdint.h>
-#include <string.h>
+#include <c.h>
+#include <define.h>
+#include <type.h>
 
 // 颜色定义，根据 CSS Color Module Level 4
 const struct {
@@ -12,7 +9,7 @@ const struct {
     struct {
       byte r, g, b, a;
     };
-    uint32_t c;
+    u32 c;
   };
 } _color_tabel[] = {
     {"aliceblue",            240, 248, 255, 255},
@@ -165,7 +162,7 @@ const struct {
     {"yellowgreen",          154, 205, 50,  255},
 };
 
-dlexport uint32_t pdui_color_from_name(cstr name) {
+dlexport u32 color_from_name(cstr name) {
   for (int i = 0; i < lengthof(_color_tabel); i++) {
     if (strcmp(_color_tabel[i].name, name) == 0) {
       return RGBA(_color_tabel[i].r, _color_tabel[i].g, _color_tabel[i].b, _color_tabel[i].a);

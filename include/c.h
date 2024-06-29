@@ -4,12 +4,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "c/color.h"
 #include "c/crypto.h"
+#include "c/errno.h"
 #include "c/error.h"
 #include "c/math.h"
 #include "c/rbtree.h"
-#include "c/std/errno.h"
 #include "c/string.h"
+#include "c/syscall.h"
 #ifdef __cplusplus
 }
 #endif
