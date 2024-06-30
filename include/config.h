@@ -11,11 +11,17 @@
 // 是否启用快速的色彩空间变换等
 #define FAST_COLOR_TRANSFORM 1
 
+//** 在没有标准库的情况下 OSAPI 宏才有效 **
+
 #define OSAPI_MALLOC 1 // 是否支持 malloc 函数
 #define OSAPI_PALLOC 0 // 是否支持 palloc 函数
 
 #define OSAPI_SHM 0 // 是否支持共享内存
 
 // 其实你可以做一个只有内核且只有一个进程的 OS (
-#define OSAPI_MP 0 // 是否支持多进程
+// 如果你想将整个图形化界面放到一个程序中，请将 OSAPI_MP 设置为 0
+#define OSAPI_MP 0 // 是否在多进程模式下运行
 #define OSAPI_MT 0 // 是否支持多线程
+
+#define OSAPI_FILE_UNIX 1 // 类似 unix 的文件操作函数
+#define OSAPI_FILE_EASY 0 // 简单的文件操作函数

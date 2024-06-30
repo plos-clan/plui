@@ -453,8 +453,8 @@ void PixelB::RGB2HSV() {
   float gNorm = g / 255.0f;
   float bNorm = b / 255.0f;
 
-  float max   = std::max({rNorm, gNorm, bNorm});
-  float min   = std::min({rNorm, gNorm, bNorm});
+  float max   = cpp::max(rNorm, gNorm, bNorm);
+  float min   = cpp::min(rNorm, gNorm, bNorm);
   float delta = max - min;
 
   float h = 0, s = 0, v = max;
@@ -475,9 +475,9 @@ void PixelB::RGB2HSV() {
   }
 
   // 将 HSV 值存储在 r, g, b 字段中
-  r = static_cast<byte>(h / 360.0f * 255.0f);
-  g = static_cast<byte>(s * 255.0f);
-  b = static_cast<byte>(v * 255.0f);
+  r = (byte)(h / 360.0f * 255.0f);
+  g = (byte)(s * 255.0f);
+  b = (byte)(v * 255.0f);
 }
 
 void PixelB::HSV2RGB() {
@@ -486,7 +486,7 @@ void PixelB::HSV2RGB() {
   float v = b / 255.0f;
 
   float c = v * s;
-  float x = c * (1.0f - fabs(fmod(h / 60.0f, 2) - 1.0f));
+  float x = c * (1.0f - cpp::abs(cpp::mod(h / 60.0f, 2) - 1.0f));
   float m = v - c;
 
   float rNorm, gNorm, bNorm;
@@ -527,8 +527,8 @@ void PixelB::RGB2HSL() {
   float gNorm = g / 255.0f;
   float bNorm = b / 255.0f;
 
-  float max   = std::max({rNorm, gNorm, bNorm});
-  float min   = std::min({rNorm, gNorm, bNorm});
+  float max   = cpp::max(rNorm, gNorm, bNorm);
+  float min   = cpp::min(rNorm, gNorm, bNorm);
   float delta = max - min;
 
   float h = 0, s = 0, l = (max + min) / 2.0f;
@@ -563,8 +563,8 @@ void PixelB::HSL2RGB() {
   float s = g / 255.0f;
   float l = b / 255.0f;
 
-  float c = (1.0f - fabs(2.0f * l - 1.0f)) * s;
-  float x = c * (1.0f - fabs(fmod(h / 60.0f, 2) - 1.0f));
+  float c = (1.0f - cpp::abs(2.0f * l - 1.0f)) * s;
+  float x = c * (1.0f - cpp::abs(cpp::mod(h / 60.0f, 2) - 1.0f));
   float m = l - c / 2.0f;
 
   float rNorm, gNorm, bNorm;

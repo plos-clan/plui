@@ -6,6 +6,33 @@
 
 namespace pl2d {
 
+namespace color {
+enum EFmtConv {
+  U8,
+  U16,
+  U32,
+  F32,
+  F64,
+};
+enum EColorSpaceConv {
+  RGB2Grayscale,
+  RGB2HSV,
+  HSV2RGB,
+  RGB2HSL,
+  HSL2RGB,
+  RGB2XYZ,
+  XYZ2RGB,
+  XYZ2LAB,
+  LAB2XYZ,
+  RGB2LAB,
+  LAB2RGB,
+  XYZ2LUV,
+  LUV2XYZ,
+  RGB2LUV,
+  LUV2RGB,
+};
+} // namespace color
+
 // Gamma校正的参数
 // 目前似乎用不上
 constexpr f32 GAMMA = 2.2f;
@@ -29,6 +56,13 @@ struct BasePixel {
     };
     T d[4];
   };
+
+  BasePixel() = default;
+  BasePixel(T r, T g, T b, T a) : r(r), g(g), b(b), a(a) {}
+  BasePixel(const BasePixel &)                         = default;
+  BasePixel(BasePixel &&) noexcept                     = default;
+  auto operator=(const BasePixel &) -> BasePixel     & = default;
+  auto operator=(BasePixel &&) noexcept -> BasePixel & = default;
 
   auto operator[](size_t n) const -> T {
     return d[n];
@@ -80,8 +114,7 @@ struct BasePixel {
 };
 
 struct PixelB : BasePixel<u8> {
-  PixelB(const BasePixel<u8> &p) : BasePixel<u8>(p) {}
-  PixelB(BasePixel<u8> &&p) : BasePixel<u8>(cpp::move(p)) {}
+  using BasePixel::BasePixel;
 
   void        mix(const PixelB &s);
   static auto mix(const PixelB &c1, const PixelB &c2) -> PixelB;
@@ -112,6 +145,8 @@ struct PixelB : BasePixel<u8> {
 };
 
 struct PixelS : BasePixel<u16> {
+  using BasePixel::BasePixel;
+
   void        mix(const PixelS &s);
   static auto mix(const PixelS &c1, const PixelS &c2) -> PixelS;
 
@@ -141,6 +176,8 @@ struct PixelS : BasePixel<u16> {
 };
 
 struct PixelI : BasePixel<u32> {
+  using BasePixel::BasePixel;
+
   void        mix(const PixelI &s);
   static auto mix(const PixelI &c1, const PixelI &c2) -> PixelI;
 
@@ -169,10 +206,9 @@ struct PixelI : BasePixel<u32> {
   void LUV2RGB();
 };
 
-template <typename T>
-struct BasePixelF : BasePixel<T> {};
+struct PixelF : BasePixel<f32> {
+  using BasePixel::BasePixel;
 
-struct PixelF : BasePixelF<f32> {
   void        mix(const PixelF &s);
   static auto mix(const PixelF &c1, const PixelF &c2) -> PixelF;
 
@@ -201,7 +237,9 @@ struct PixelF : BasePixelF<f32> {
   void LUV2RGB();
 };
 
-struct PixelD : BasePixelF<f64> {
+struct PixelD : BasePixel<f64> {
+  using BasePixel::BasePixel;
+
   void        mix(const PixelD &s);
   static auto mix(const PixelD &c1, const PixelD &c2) -> PixelD;
 

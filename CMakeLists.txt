@@ -12,8 +12,8 @@ include(GoogleTest)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-set(CMAKE_C_FLAGS "-std=gnu2x")
-set(CMAKE_CXX_FLAGS "-std=gnu++2b")
+set(CMAKE_C_FLAGS "-std=gnu2x -flto -O3 -march=native")
+set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -O3 -march=native")
 
 include(cmake/gtest)
 include(cmake/show-flags) 

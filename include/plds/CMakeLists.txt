@@ -1,6 +1,3 @@
-mkheader_h(base)
 mkheader_hpp(base)
-mkheader_h(client)
 mkheader_hpp(client)
-mkheader_h(server)
 mkheader_hpp(server)

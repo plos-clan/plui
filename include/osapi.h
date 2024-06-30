@@ -58,18 +58,41 @@ finline void pfree(void *ptr) {
 }
 #endif
 
-dlimport int     open(cstr filename, int flags, int mode);
+#if !OSAPI_FILE_UNIX && !OSAPI_FILE_EASY
+#  warning "建议至少支持一种文件读写方式"
+#  define NO_FILE_API // 定义即不支持文件读写
+#else
+// 都必须支持的API
+dlimport int     remove(cstr filename); //  删除文件
+// 类unix的文件API
+dlimport int     open(cstr filename, int flags, ...) __nonnull((1));
 dlimport ssize_t read(int fd, void *buf, size_t n);
 dlimport ssize_t write(int fd, const void *buf, size_t n);
 dlimport ssize_t seek(int fd, ssize_t offset, int whence);
 dlimport int     close(int fd);
+// 简单的文件API（这是最简单的API了吧）
+// 获取文件大小，如果没有这个函数就会用seek到末尾的方式来获取
+dlimport ssize_t filesize(cstr filename);
+dlimport void   *readfile(cstr filename, size_t *size_p);
+dlimport int     writefile(cstr filename, const void *data, size_t size);
+#endif
 
+#if !NO_STD || OSAPI_MT
+// 返回当前线程的tid
+dlimport int gettid() __THROW;
+#endif
+#if !NO_STD || OSAPI_MP
 // 返回当前进程的pid
 dlimport int getpid() __THROW;
+#endif
+
+#if !NO_STD || OSAPI_MP || OSAPI_MT
+// 返回进程号
 // 返回0表示由内核唤醒，返回>0表示由用户进程唤醒，返回<0表示错误
 dlimport int pause();
 // 唤醒指定pid的进程，返回0表示成功，返回<0表示失败
 dlimport int wakeup(int pid);
+#endif
 
 #if OSAPI_SHM
 // shmalloc 返回资源描述符(rd) rd为大于等于0的整数

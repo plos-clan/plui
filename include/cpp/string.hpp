@@ -5,7 +5,7 @@
 namespace cpp {
 
 #ifdef SAFE_API
-auto utf8_to_32(const u8 *&s) -> u32 {
+static auto utf8_to_32(const u8 *&s) -> u32 {
   u32 code;
   if (s[0] < 0x80) { // ASCII字符（单字节）
     code = *s++;
@@ -34,7 +34,7 @@ err:
   return 0xfffd; // 跳过非法序列
 }
 #else
-auto utf8_to_32(const u8 *&s) -> u32 {
+static auto utf8_to_32(const u8 *&s) -> u32 {
   u32 code;
   if (*s < 0x80) { // ASCII字符（单字节）
     code = *s++;
