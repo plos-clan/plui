@@ -52,7 +52,7 @@ static void init_xlib() {
   { // 隐藏鼠标指针
     XColor  black   = {};
     uint8_t data[8] = {};
-    Pixmap  bitmap  = XCreateBitmapFromData(display, root, data, 1, 1);
+    Pixmap  bitmap  = XCreateBitmapFromData(display, root, (const char *)data, 1, 1);
     Cursor  cursor  = XCreatePixmapCursor(display, bitmap, bitmap, &black, &black, 0, 0);
     XDefineCursor(display, window, cursor);
     XFreeCursor(display, cursor);

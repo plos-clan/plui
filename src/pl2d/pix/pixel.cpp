@@ -1,5 +1,3 @@
-#include "pl2d/pixel.hpp"
-#include <c.h>
 #include <cpp.hpp>
 #include <define.h>
 #include <pl2d.hpp>
@@ -117,7 +115,7 @@ dlexport auto PixelD::to_f64() const -> PixelD {
 //* ----------------------------------------------------------------------------------------------------
 
 #if FAST_COLOR_TRANSFORM
-auto PixelB::to_grayscale() -> PixelB {
+auto PixelB::to_grayscale() const -> PixelB {
   byte gray = (r * 19595 + g * 38470 + b * 7471) / 65536;
   return PixelB{gray, gray, gray, a};
 }
@@ -126,7 +124,7 @@ void PixelB::RGB2Grayscale() {
   r = g = b = gray;
 }
 
-auto PixelS::to_grayscale() -> PixelS {
+auto PixelS::to_grayscale() const -> PixelS {
   u16 gray = (r * 19595U + g * 38470U + b * 7471U) / 65536U;
   return PixelS{gray, gray, gray, a};
 }
@@ -135,7 +133,7 @@ void PixelS::RGB2Grayscale() {
   r = g = b = gray;
 }
 
-auto PixelI::to_grayscale() -> PixelI {
+auto PixelI::to_grayscale() const -> PixelI {
   u32 gray = (r * 19595ULL + g * 38470ULL + b * 7471ULL) / 65536ULL;
   return PixelI{gray, gray, gray, a};
 }

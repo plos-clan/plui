@@ -122,8 +122,6 @@ struct BasePixel {
 struct PixelB : BasePixel<u8, 255, 128, u32, f32> {
   using BasePixel::BasePixel;
 
-  auto to_grayscale() -> PixelB;
-
   auto to_u8() const -> PixelB;
   auto to_u16() const -> PixelS;
   auto to_u32() const -> PixelI;
@@ -131,6 +129,7 @@ struct PixelB : BasePixel<u8, 255, 128, u32, f32> {
   auto to_f64() const -> PixelD;
 
 #if FAST_COLOR_TRANSFORM
+  auto to_grayscale() const -> PixelB;
   void RGB2Grayscale();
 #endif
 };
@@ -138,8 +137,6 @@ struct PixelB : BasePixel<u8, 255, 128, u32, f32> {
 struct PixelS : BasePixel<u16, 65535, 32767, u32, f32> {
   using BasePixel::BasePixel;
 
-  auto to_grayscale() -> PixelS;
-
   auto to_u8() const -> PixelB;
   auto to_u16() const -> PixelS;
   auto to_u32() const -> PixelI;
@@ -147,6 +144,7 @@ struct PixelS : BasePixel<u16, 65535, 32767, u32, f32> {
   auto to_f64() const -> PixelD;
 
 #if FAST_COLOR_TRANSFORM
+  auto to_grayscale() const -> PixelS;
   void RGB2Grayscale();
 #endif
 };
@@ -154,8 +152,6 @@ struct PixelS : BasePixel<u16, 65535, 32767, u32, f32> {
 struct PixelI : BasePixel<u32, 4294967295, 2147483647, u64, f32> {
   using BasePixel::BasePixel;
 
-  auto to_grayscale() -> PixelI;
-
   auto to_u8() const -> PixelB;
   auto to_u16() const -> PixelS;
   auto to_u32() const -> PixelI;
@@ -163,6 +159,7 @@ struct PixelI : BasePixel<u32, 4294967295, 2147483647, u64, f32> {
   auto to_f64() const -> PixelD;
 
 #if FAST_COLOR_TRANSFORM
+  auto to_grayscale() const -> PixelI;
   void RGB2Grayscale();
 #endif
 };

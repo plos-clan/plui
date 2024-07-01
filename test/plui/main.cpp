@@ -23,9 +23,13 @@ auto test_main(void *buffer, u32 width, u32 height) -> int {
   pl2d::TextureB tex;
   fb.init_texture(tex);
 
+  byte i = 0;
+
   while (1) {
     next_event();
-    tex.fill(tex.size_rect(), {255, 128, 0, 255});
+    pl2d::PixelB p = {i++, 255, 255, 255};
+    p.HSV2RGB();
+    tex.fill(tex.size_rect(), p);
     fb.flush(tex);
     screen_flush();
   }
