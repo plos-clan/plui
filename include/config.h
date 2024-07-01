@@ -11,6 +11,10 @@
 // 是否启用快速的色彩空间变换等
 #define FAST_COLOR_TRANSFORM 1
 
+// 是否启用更好的颜色插值算法（更好但更慢）
+#define BETTER_COLOR_INTERPOLATE 1
+#define FAST_COLOR_INTERPOLATE   1
+
 //** 在没有标准库的情况下 OSAPI 宏才有效 **
 
 #define OSAPI_MALLOC 1 // 是否支持 malloc 函数

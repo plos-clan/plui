@@ -1,6 +1,9 @@
 #pragma once
 #include <config.h>
 
+#include <type_traits>
+// 实在实现不出来啊
+
 namespace cpp {
 
 template <typename T>

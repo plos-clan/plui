@@ -48,7 +48,13 @@ struct PixelI; // int
 struct PixelF; // float
 struct PixelD; // double
 
-template <typename T>
+#define BasePixelTemplate                                                                          \
+  typename T, typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max,              \
+      typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max_2, typename T2,       \
+      typename FT
+#define BasePixelT BasePixel<T, v_max, v_max_2, T2, FT>
+
+template <BasePixelTemplate>
 struct BasePixel {
   union {
     struct {
@@ -113,11 +119,8 @@ struct BasePixel {
   void LUV2RGB();
 };
 
-struct PixelB : BasePixel<u8> {
+struct PixelB : BasePixel<u8, 255, 128, u32, f32> {
   using BasePixel::BasePixel;
-
-  void        mix(const PixelB &s);
-  static auto mix(const PixelB &c1, const PixelB &c2) -> PixelB;
 
   auto to_grayscale() -> PixelB;
 
@@ -127,28 +130,13 @@ struct PixelB : BasePixel<u8> {
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
 
+#if FAST_COLOR_TRANSFORM
   void RGB2Grayscale();
-  void RGB2HSV();
-  void HSV2RGB();
-  void RGB2HSL();
-  void HSL2RGB();
-  void RGB2XYZ();
-  void XYZ2RGB();
-  void XYZ2LAB();
-  void LAB2XYZ();
-  void RGB2LAB();
-  void LAB2RGB();
-  void XYZ2LUV();
-  void LUV2XYZ();
-  void RGB2LUV();
-  void LUV2RGB();
+#endif
 };
 
-struct PixelS : BasePixel<u16> {
+struct PixelS : BasePixel<u16, 65535, 32767, u32, f32> {
   using BasePixel::BasePixel;
-
-  void        mix(const PixelS &s);
-  static auto mix(const PixelS &c1, const PixelS &c2) -> PixelS;
 
   auto to_grayscale() -> PixelS;
 
@@ -158,28 +146,13 @@ struct PixelS : BasePixel<u16> {
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
 
+#if FAST_COLOR_TRANSFORM
   void RGB2Grayscale();
-  void RGB2HSV();
-  void HSV2RGB();
-  void RGB2HSL();
-  void HSL2RGB();
-  void RGB2XYZ();
-  void XYZ2RGB();
-  void XYZ2LAB();
-  void LAB2XYZ();
-  void RGB2LAB();
-  void LAB2RGB();
-  void XYZ2LUV();
-  void LUV2XYZ();
-  void RGB2LUV();
-  void LUV2RGB();
+#endif
 };
 
-struct PixelI : BasePixel<u32> {
+struct PixelI : BasePixel<u32, 4294967295, 2147483647, u64, f32> {
   using BasePixel::BasePixel;
-
-  void        mix(const PixelI &s);
-  static auto mix(const PixelI &c1, const PixelI &c2) -> PixelI;
 
   auto to_grayscale() -> PixelI;
 
@@ -189,28 +162,13 @@ struct PixelI : BasePixel<u32> {
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
 
+#if FAST_COLOR_TRANSFORM
   void RGB2Grayscale();
-  void RGB2HSV();
-  void HSV2RGB();
-  void RGB2HSL();
-  void HSL2RGB();
-  void RGB2XYZ();
-  void XYZ2RGB();
-  void XYZ2LAB();
-  void LAB2XYZ();
-  void RGB2LAB();
-  void LAB2RGB();
-  void XYZ2LUV();
-  void LUV2XYZ();
-  void RGB2LUV();
-  void LUV2RGB();
+#endif
 };
 
-struct PixelF : BasePixel<f32> {
+struct PixelF : BasePixel<f32, 1, 1, f32, f32> {
   using BasePixel::BasePixel;
-
-  void        mix(const PixelF &s);
-  static auto mix(const PixelF &c1, const PixelF &c2) -> PixelF;
 
   auto to_grayscale() -> PixelF;
 
@@ -219,29 +177,10 @@ struct PixelF : BasePixel<f32> {
   auto to_u32() const -> PixelI;
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
-
-  void RGB2Grayscale();
-  void RGB2HSV();
-  void HSV2RGB();
-  void RGB2HSL();
-  void HSL2RGB();
-  void RGB2XYZ();
-  void XYZ2RGB();
-  void XYZ2LAB();
-  void LAB2XYZ();
-  void RGB2LAB();
-  void LAB2RGB();
-  void XYZ2LUV();
-  void LUV2XYZ();
-  void RGB2LUV();
-  void LUV2RGB();
 };
 
-struct PixelD : BasePixel<f64> {
+struct PixelD : BasePixel<f64, 1, 1, f32, f64> {
   using BasePixel::BasePixel;
-
-  void        mix(const PixelD &s);
-  static auto mix(const PixelD &c1, const PixelD &c2) -> PixelD;
 
   auto to_grayscale() -> PixelD;
 
@@ -250,22 +189,6 @@ struct PixelD : BasePixel<f64> {
   auto to_u32() const -> PixelI;
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
-
-  void RGB2Grayscale();
-  void RGB2HSV();
-  void HSV2RGB();
-  void RGB2HSL();
-  void HSL2RGB();
-  void RGB2XYZ();
-  void XYZ2RGB();
-  void XYZ2LAB();
-  void LAB2XYZ();
-  void RGB2LAB();
-  void LAB2RGB();
-  void XYZ2LUV();
-  void LUV2XYZ();
-  void RGB2LUV();
-  void LUV2RGB();
 };
 
 using Pixel = PixelB;

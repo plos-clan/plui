@@ -37,6 +37,68 @@ struct BaseLine {
 using LineI = BaseLine<i32>;
 using LineF = BaseLine<f32>;
 using LineD = BaseLine<f64>;
-using Line  = RectI;
+using Line  = LineI;
+
+class ItLineI : LineI {
+  using LineI::LineI;
+
+public:
+  class Iterator {
+  private:
+    bool ended = false;
+    i32  x1, y1, x2, y2;
+    i32  dx, dy, sx, sy, err;
+
+  public:
+    Iterator() : ended(true) {}
+    Iterator(i32 x1, i32 y1, i32 x2, i32 y2) : x1(x1), y1(y1), x2(x2), y2(y2) {
+      dx  = cpp::abs(x2 - x1);
+      dy  = cpp::abs(y2 - y1);
+      sx  = (x1 < x2) ? 1 : -1;
+      sy  = (y1 < y2) ? 1 : -1;
+      err = dx - dy;
+    }
+
+    auto operator*() -> Point2I {
+      return {x1, y1};
+    }
+
+    auto operator++() -> Iterator & {
+      if (ended) return *this;
+      if (x1 == x2 && y1 == y2) {
+        ended = true;
+        return *this;
+      }
+
+      if (2 * err > -dy) {
+        err -= dy;
+        x1  += sx;
+      }
+      if (2 * err < dx) {
+        err += dx;
+        y1  += sy;
+      }
+      return *this;
+    }
+
+    auto operator==(const Iterator &it) const -> bool {
+      return ended == it.ended;
+    }
+
+    auto operator!=(const Iterator &it) const -> bool {
+      return ended != it.ended;
+    }
+  };
+
+  auto begin() const -> Iterator {
+    return {x1, y1, x2, y2};
+  }
+
+  auto end() const -> Iterator {
+    return {};
+  }
+};
+
+using ItLine = ItLineI;
 
 } // namespace pl2d
