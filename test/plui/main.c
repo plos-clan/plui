@@ -50,13 +50,13 @@ static void init_xlib() {
   XFlush(display);
 
   { // 隐藏鼠标指针
-    // XColor  black   = {};
-    // uint8_t data[8] = {};
-    // Pixmap  bitmap  = XCreateBitmapFromData(display, root, data, 8, 8);
-    // Cursor  cursor  = XCreatePixmapCursor(display, bitmap, bitmap, &black, &black, 0, 0);
-    // XDefineCursor(display, window, cursor);
-    // XFreeCursor(display, cursor);
-    // XFreePixmap(display, bitmap);
+    XColor  black   = {};
+    uint8_t data[8] = {};
+    Pixmap  bitmap  = XCreateBitmapFromData(display, root, data, 1, 1);
+    Cursor  cursor  = XCreatePixmapCursor(display, bitmap, bitmap, &black, &black, 0, 0);
+    XDefineCursor(display, window, cursor);
+    XFreeCursor(display, cursor);
+    XFreePixmap(display, bitmap);
   }
 }
 
