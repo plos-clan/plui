@@ -39,4 +39,7 @@ void BaseTexture<T>::fill_mix(RectI rect, const T &color) {
   }
 }
 
+template class BaseTexture<PixelB>;
+template class BaseTexture<PixelF>;
+
 } // namespace pl2d

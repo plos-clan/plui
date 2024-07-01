@@ -41,6 +41,43 @@ BaseTexture<T>::~BaseTexture() {
 }
 
 template <typename T>
+BaseTexture<T>::BaseTexture(BaseTexture &&tex) noexcept {
+  pixels           = tex.pixels;
+  own_pixels       = tex.own_pixels;
+  width            = tex.width;
+  height           = tex.height;
+  pitch            = tex.pitch;
+  size             = tex.size;
+  alloced_size     = tex.alloced_size;
+  tex.pixels       = null;
+  tex.own_pixels   = false;
+  tex.width        = 0;
+  tex.height       = 0;
+  tex.pitch        = 0;
+  tex.size         = 0;
+  tex.alloced_size = 0;
+}
+
+template <typename T>
+auto BaseTexture<T>::operator=(BaseTexture &&tex) noexcept -> BaseTexture & {
+  pixels           = tex.pixels;
+  own_pixels       = tex.own_pixels;
+  width            = tex.width;
+  height           = tex.height;
+  pitch            = tex.pitch;
+  size             = tex.size;
+  alloced_size     = tex.alloced_size;
+  tex.pixels       = null;
+  tex.own_pixels   = false;
+  tex.width        = 0;
+  tex.height       = 0;
+  tex.pitch        = 0;
+  tex.size         = 0;
+  tex.alloced_size = 0;
+  return *this;
+}
+
+template <typename T>
 auto BaseTexture<T>::copy() -> BaseTexture<T> * {
   auto *d = new BaseTexture<T>(width, height, pitch);
   if (d == null) return null;
@@ -107,6 +144,9 @@ auto BaseTexture<T>::set(i32 x, i32 y, const T &p) -> BaseTexture & {
   pixels[y * pitch + x] = p;
   return *this;
 }
+
+template class BaseTexture<PixelB>;
+template class BaseTexture<PixelF>;
 
 //* ----------------------------------------------------------------------------------------------------
 //; TextureB

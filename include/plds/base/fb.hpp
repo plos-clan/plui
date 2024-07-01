@@ -31,9 +31,19 @@ enum class PixFmt : u32 {
   ABGR8888,
   ABGR = ABGR8888,
 
+  // 浮点
+  RGB_FLT,
+  BGR_FLT,
+  RGBA_FLT,
+  BGRA_FLT,
+  ARGB_FLT,
+  ABGR_FLT,
+
   // 通道分离
   RGB_Plane,
   RGBA_Plane,
+  RGB_FLT_Plane,
+  RGBA_FLT_Plane,
 };
 
 enum class PalFmt : u32 {
@@ -53,10 +63,6 @@ enum class PalFmt : u32 {
   ARGB = ARGB8888,
   ABGR8888,
   ABGR = ABGR8888,
-
-  // 通道分离
-  RGB_Plane,
-  RGBA_Plane,
 };
 
 struct FrameBuffer {
@@ -78,19 +84,23 @@ struct FrameBuffer {
   u32    pitch   = 0;            // pitch = width * size_of_pixel
   u32    size    = 0;            //
   u16    bpp     = 0;            // 像素深度（可自动计算） size_of_pixel * 8
-  u8     padding = 0;            //
+  u8     padding = 0;            // 按多少字节对齐
   u8     channel = 0;            //
   PixFmt pixfmt  = PixFmt::RGBA; // 像素格式
   PalFmt palfmt  = PalFmt::None; // 像素格式
   bool   alpha   = false;        // 是否有alpha通道（可自动计算）
   bool   plane   = false;        // 是否通道分离
   bool   ready   = false;        //
-  void (*cb_flushed)();
+  void (*cb_flushed)();          //
 
   FrameBuffer()                        = default;
-  FrameBuffer(const FrameBuffer &)     = default;
+  FrameBuffer(const FrameBuffer &)     = delete;
   FrameBuffer(FrameBuffer &&) noexcept = default;
 
+  auto operator=(const FrameBuffer &) -> FrameBuffer     & = delete;
+  auto operator=(FrameBuffer &&) noexcept -> FrameBuffer & = default;
+
+  // 设置好需要的参数后使用 init 来自动填充其它参数
   auto init() -> int; // 返回 0: 正常，<0:异常
 
   void clear();       // 全部数据清零
@@ -106,6 +116,11 @@ struct FrameBuffer {
   auto copy_to(pl2d::TextureF &tex) const -> int;
   auto copy_to(pl2d::TextureB &tex, const pl2d::Rect &rect) const -> int;
   auto copy_to(pl2d::TextureF &tex, const pl2d::Rect &rect) const -> int;
+
+  void init_texture(pl2d::TextureB &tex);
+  void init_texture(pl2d::TextureF &tex);
+  auto new_texture_b() -> pl2d::TextureB *;
+  auto new_texture_f() -> pl2d::TextureF *;
 };
 
 } // namespace plds

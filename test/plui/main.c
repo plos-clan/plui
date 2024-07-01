@@ -18,7 +18,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <config.h>
+#undef NO_STD
+#define NO_STD 0
+#include <define.h>
+#include <osapi.h>
 #include <type.h>
+
+void next_event();
+void screen_flush();
+int  test_main(void *buffer, u32 width, u32 height);
 
 u32 screen_width  = 800;
 u32 screen_height = 600;
@@ -54,42 +63,38 @@ static void init_xlib() {
 XShmSegmentInfo shm_info;
 XImage         *image;
 
-void create_img(int32_t width, int32_t height) {
+void screen_flush() {
+  XShmPutImage(display, window, DefaultGC(display, screen), image, 0, 0, 0, 0, screen_width,
+               screen_height, true);
+}
+
+void create_img(u32 width, u32 height) {
   if (image) {
     XShmDetach(display, &shm_info);
-    shmfree(shm_info.shmaddr);
+    shmunref(shm_info.shmaddr);
     XDestroyImage(image);
   }
 
   image            = XShmCreateImage(display, NULL, 24, ZPixmap, 0, &shm_info, width, height);
-  shm_info.shmaddr = image->data = shmalloc(width * height * 4, &shm_info.shmid);
+  shm_info.shmid   = shmalloc((size_t)width * height * 4);
+  shm_info.shmaddr = image->data = shmref(shm_info.shmid, null);
   shm_info.readOnly              = false;
   XShmAttach(display, &shm_info);
 }
 
-void main_loop() {
-  XEvent event;
-  while (1) {
-    XNextEvent(display, &event);
-
-    if (image && pdds_flush()) {
-      memcpy(image->data, pdds_pixels(), screen_width * screen_height * 4);
-      XShmPutImage(display, window, DefaultGC(display, screen), image, 0, 0, 0, 0, screen_width,
-                   screen_height, true);
-    }
-  }
-
-quit:
-  return;
+void next_event() {
+  static XEvent event;
+  XNextEvent(display, &event);
 }
 
 int main() {
   init_xlib();
 
-  main_loop();
+  create_img(screen_width, screen_height);
+  int ret = test_main(image->data, screen_width, screen_height);
 
   XDestroyWindow(display, window);
   XCloseDisplay(display);
 
-  return 0;
+  return ret;
 }

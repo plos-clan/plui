@@ -20,9 +20,11 @@ struct BaseTexture {
   BaseTexture(u32 width, u32 height, u32 pitch);
   BaseTexture(T *pixels, u32 width, u32 height);
   BaseTexture(T *pixels, u32 width, u32 height, u32 pitch);
-  BaseTexture(const BaseTexture &)     = delete;
-  BaseTexture(BaseTexture &&) noexcept = default;
+  BaseTexture(const BaseTexture &) = delete;
+  BaseTexture(BaseTexture &&) noexcept;
   ~BaseTexture();
+  auto operator=(const BaseTexture &) -> BaseTexture & = delete;
+  auto operator=(BaseTexture &&) noexcept -> BaseTexture &;
 
   auto ready() const -> bool {
     return pixels != null;
@@ -59,6 +61,10 @@ struct BaseTexture {
     cpp::clamp(x, 0, (i32)width - 1);
     cpp::clamp(y, 0, (i32)height - 1);
     return pixels[y * pitch + x];
+  }
+
+  auto size_rect() -> Rect {
+    return {0, 0, (i32)width - 1, (i32)height - 1};
   }
 
   auto copy() -> BaseTexture *;

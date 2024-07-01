@@ -12,10 +12,15 @@
 // 如果是 2M 请调整为 2097152
 #define PAGE_SIZE 4096
 
-#if NO_STD == 0
+#if NO_STD == 0 && defined(__cplusplus)
 #  include <cstdio>
 #  include <cstdlib>
 #  include <cstring>
+#endif
+#if NO_STD == 0 && !defined(__cplusplus)
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <string.h>
 #endif
 
 #ifdef __cplusplus
@@ -94,12 +99,34 @@ dlimport int pause();
 dlimport int wakeup(int pid);
 #endif
 
-#if OSAPI_SHM
+#if NO_STD && OSAPI_SHM
 // shmalloc 返回资源描述符(rd) rd为大于等于0的整数
 // 小于 0 表示错误
-dlimport int shmalloc(size_t size);
-dlimport int shmget(int rd, void *addr_p, size_t *size_p);
-dlimport int shmfree(int rd);
+dlimport int   shmalloc(size_t size);
+dlimport void *shmref(int rd, size_t *size_p);
+dlimport int   shmunref(void *ptr);
+dlimport int   shmfree(int rd);
+#elif !NO_STD
+#  include <sys/ipc.h>
+#  include <sys/shm.h>
+
+finline int shmalloc(size_t size) {
+  return shmget(IPC_PRIVATE, size, IPC_CREAT | 0666);
+}
+finline void *shmref(int rd, size_t *size_p) {
+  if (size_p) {
+    struct shmid_ds shmid_ds = {};
+    int             ret      = shmctl(rd, IPC_STAT, &shmid_ds);
+    if (ret == 0) *size_p = shmid_ds.shm_segsz;
+  }
+  return shmat(rd, 0, 0);
+}
+finline int shmunref(void *ptr) {
+  return shmdt(ptr);
+}
+finline int shmfree(int rd) {
+  return shmctl(rd, IPC_RMID, 0);
+}
 #endif
 
 #ifdef __cplusplus
