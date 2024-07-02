@@ -42,17 +42,32 @@ dlimport auto gamma(f64 x, f64 g = GAMMA) -> f64;
 dlimport auto igamma(f32 x, f32 g = GAMMA) -> f32;
 dlimport auto igamma(f64 x, f64 g = GAMMA) -> f64;
 
-struct PixelB; // byte
-struct PixelS; // short
-struct PixelI; // int
-struct PixelF; // float
-struct PixelD; // double
-
 #define BasePixelTemplate                                                                          \
   typename T, typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max,              \
       typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max_2, typename T2,       \
       typename FT
-#define BasePixelT BasePixel<T, v_max, v_max_2, T2, FT>
+#define _BasePixelTemplate                                                                         \
+  typename _T, typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _v_max,          \
+      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _v_max_2, typename _T2,   \
+      typename _FT
+#define BasePixelT  BasePixel<T, v_max, v_max_2, T2, FT>
+#define _BasePixelT BasePixel<_T, _v_max, _v_max_2, _T2, _FT>
+
+template <BasePixelTemplate>
+struct BasePixel;
+
+#define BasePixelBT BasePixel<u8, U8_MAX, I8_MAX, u32, f32>
+#define BasePixelST BasePixel<u16, U16_MAX, I16_MAX, u32, f32>
+#define BasePixelIT BasePixel<u32, U32_MAX, I32_MAX, u64, f64>
+#define BasePixelFT BasePixel<f32, 1, 1, f32, f32>
+#define BasePixelDT BasePixel<f64, 1, 1, f32, f64>
+
+using PixelB = BasePixelBT; // byte
+using PixelS = BasePixelST; // short
+using PixelI = BasePixelIT; // int
+using PixelF = BasePixelFT; // float
+using PixelD = BasePixelDT; // double
+using Pixel  = PixelB;
 
 template <BasePixelTemplate>
 struct BasePixel {
@@ -64,11 +79,16 @@ struct BasePixel {
   };
 
   BasePixel() = default;
+  BasePixel(u32);
+  BasePixel(T r, T g, T b) : r(r), g(g), b(b), a(v_max) {}
   BasePixel(T r, T g, T b, T a) : r(r), g(g), b(b), a(a) {}
   BasePixel(const BasePixel &)                         = default;
   BasePixel(BasePixel &&) noexcept                     = default;
   auto operator=(const BasePixel &) -> BasePixel     & = default;
   auto operator=(BasePixel &&) noexcept -> BasePixel & = default;
+
+  template <_BasePixelTemplate>
+  BasePixel(const _BasePixelT &p);
 
   auto operator[](size_t n) const -> T {
     return d[n];
@@ -88,19 +108,13 @@ struct BasePixel {
   void        mix(const BasePixel &s);
   static auto mix(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
 
-  auto to_grayscale() -> BasePixel;
+  auto to_grayscale() const -> BasePixel;
 
   auto to_u8() const -> PixelB;
   auto to_u16() const -> PixelS;
   auto to_u32() const -> PixelI;
   auto to_f32() const -> PixelF;
   auto to_f64() const -> PixelD;
-
-  operator PixelB();
-  operator PixelS();
-  operator PixelI();
-  operator PixelF();
-  operator PixelD();
 
   void RGB2Grayscale();
   void RGB2HSV();
@@ -118,76 +132,5 @@ struct BasePixel {
   void RGB2LUV();
   void LUV2RGB();
 };
-
-struct PixelB : BasePixel<u8, 255, 128, u32, f32> {
-  using BasePixel::BasePixel;
-
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
-
-#if FAST_COLOR_TRANSFORM
-  auto to_grayscale() const -> PixelB;
-  void RGB2Grayscale();
-#endif
-};
-
-struct PixelS : BasePixel<u16, 65535, 32767, u32, f32> {
-  using BasePixel::BasePixel;
-
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
-
-#if FAST_COLOR_TRANSFORM
-  auto to_grayscale() const -> PixelS;
-  void RGB2Grayscale();
-#endif
-};
-
-struct PixelI : BasePixel<u32, 4294967295, 2147483647, u64, f32> {
-  using BasePixel::BasePixel;
-
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
-
-#if FAST_COLOR_TRANSFORM
-  auto to_grayscale() const -> PixelI;
-  void RGB2Grayscale();
-#endif
-};
-
-struct PixelF : BasePixel<f32, 1, 1, f32, f32> {
-  using BasePixel::BasePixel;
-
-  auto to_grayscale() -> PixelF;
-
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
-};
-
-struct PixelD : BasePixel<f64, 1, 1, f32, f64> {
-  using BasePixel::BasePixel;
-
-  auto to_grayscale() -> PixelD;
-
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
-};
-
-using Pixel = PixelB;
 
 } // namespace pl2d

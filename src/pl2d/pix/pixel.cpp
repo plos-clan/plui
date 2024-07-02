@@ -22,142 +22,90 @@ auto igamma(f64 x, f64 g) -> f64 {
 }
 
 //* ----------------------------------------------------------------------------------------------------
-//; 类型转换
+//; 构造
 //* ----------------------------------------------------------------------------------------------------
 
-// --------------------------------------------------
-//. u8
-
-dlexport auto PixelB::to_u8() const -> PixelB {
-  return *this;
-}
-dlexport auto PixelB::to_u16() const -> PixelS {}
-dlexport auto PixelB::to_u32() const -> PixelI {}
-dlexport auto PixelB::to_f32() const -> PixelF {
-  return PixelF{r / 255.f, g / 255.f, b / 255.f, a / 255.f};
-}
-dlexport auto PixelB::to_f64() const -> PixelD {
-  return PixelD{r / 255., g / 255., b / 255., a / 255.};
-}
-
-// --------------------------------------------------
-//. u16
-
-dlexport auto PixelS::to_u8() const -> PixelB {}
-dlexport auto PixelS::to_u16() const -> PixelS {
-  return *this;
-}
-dlexport auto PixelS::to_u32() const -> PixelI {}
-dlexport auto PixelS::to_f32() const -> PixelF {
-  return PixelF{r / 65535.f, g / 65535.f, b / 65535.f, a / 65535.f};
-}
-dlexport auto PixelS::to_f64() const -> PixelD {
-  return PixelD{r / 65535., g / 65535., b / 65535., a / 65535.};
-}
-
-// --------------------------------------------------
-//. u32
-
-dlexport auto PixelI::to_u8() const -> PixelB {}
-dlexport auto PixelI::to_u16() const -> PixelS {}
-dlexport auto PixelI::to_u32() const -> PixelI {
-  return *this;
-}
-dlexport auto PixelI::to_f32() const -> PixelF {
-  return PixelF{r / 4294967295.f, g / 4294967295.f, b / 4294967295.f, a / 4294967295.f};
-}
-dlexport auto PixelI::to_f64() const -> PixelD {
-  return PixelD{r / 4294967295., g / 4294967295., b / 4294967295., a / 4294967295.};
-}
-
-// --------------------------------------------------
-//. f32
-
-dlexport auto PixelF::to_u8() const -> PixelB {
-  return PixelB{(byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)};
-}
-dlexport auto PixelF::to_u16() const -> PixelS {
-  return PixelS{(u16)(r * 65535), (u16)(g * 65535), (u16)(b * 65535), (u16)(a * 65535)};
-}
-dlexport auto PixelF::to_u32() const -> PixelI {
-  return PixelI{(u32)(r * 4294967295), (u32)(g * 4294967295), (u32)(b * 4294967295),
-                (u32)(a * 4294967295)};
-}
-dlexport auto PixelF::to_f32() const -> PixelF {
-  return *this;
-}
-dlexport auto PixelF::to_f64() const -> PixelD {
-  return PixelD{r, g, b, a};
-}
-
-// --------------------------------------------------
-//. f64
-
-dlexport auto PixelD::to_u8() const -> PixelB {
-  return PixelB{(byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)};
-}
-dlexport auto PixelD::to_u16() const -> PixelS {
-  return PixelS{(u16)(r * 65535), (u16)(g * 65535), (u16)(b * 65535), (u16)(a * 65535)};
-}
-dlexport auto PixelD::to_u32() const -> PixelI {
-  return PixelI{(u32)(r * 4294967295), (u32)(g * 4294967295), (u32)(b * 4294967295),
-                (u32)(a * 4294967295)};
-}
-dlexport auto PixelD::to_f32() const -> PixelF {
-  return PixelF{(f32)r, (f32)g, (f32)b, (f32)a};
-}
-dlexport auto PixelD::to_f64() const -> PixelD {
-  return *this;
-}
-
-//* ----------------------------------------------------------------------------------------------------
-//; 灰度
-//* ----------------------------------------------------------------------------------------------------
-
-#if FAST_COLOR_TRANSFORM
-auto PixelB::to_grayscale() const -> PixelB {
-  byte gray = (r * 19595 + g * 38470 + b * 7471) / 65536;
-  return PixelB{gray, gray, gray, a};
-}
-void PixelB::RGB2Grayscale() {
-  byte gray = (r * 19595 + g * 38470 + b * 7471) / 65536;
-  r = g = b = gray;
-}
-
-auto PixelS::to_grayscale() const -> PixelS {
-  u16 gray = (r * 19595U + g * 38470U + b * 7471U) / 65536U;
-  return PixelS{gray, gray, gray, a};
-}
-void PixelS::RGB2Grayscale() {
-  u16 gray = (r * 19595U + g * 38470U + b * 7471U) / 65536U;
-  r = g = b = gray;
-}
-
-auto PixelI::to_grayscale() const -> PixelI {
-  u32 gray = (r * 19595ULL + g * 38470ULL + b * 7471ULL) / 65536ULL;
-  return PixelI{gray, gray, gray, a};
-}
-void PixelI::RGB2Grayscale() {
-  u32 gray = (r * 19595ULL + g * 38470ULL + b * 7471ULL) / 65536ULL;
-  r = g = b = gray;
-}
+template <BasePixelTemplate>
+BasePixelT::BasePixel(u32 c) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
+#else
+  byte r = c >> 24, g = c >> 16, b = c >> 8, a;
 #endif
+  if constexpr (std::is_floating_point_v<T>) {
+    this->r = r / (T)255;
+    this->g = g / (T)255;
+    this->b = b / (T)255;
+    this->a = a / (T)255;
+  } else {
+    this->r = (u64)r * v_max / 255;
+    this->g = (u64)g * v_max / 255;
+    this->b = (u64)b * v_max / 255;
+    this->a = (u64)a * v_max / 255;
+  }
+}
 
 template <BasePixelTemplate>
-auto BasePixelT::to_grayscale() -> BasePixelT {
-  T gray = r * (FT).299 + g * (FT).587 + b * (FT).114;
-  return {gray, gray, gray, a};
-}
-template <BasePixelTemplate>
-void BasePixelT::RGB2Grayscale() {
-  T gray = r * (FT).299 + g * (FT).587 + b * (FT).114;
-  r = g = b = gray;
+template <_BasePixelTemplate>
+BasePixelT::BasePixel(const _BasePixelT &p) {
+  if constexpr (v_max == v_max_2 && _v_max == _v_max_2) {
+    r = p.r, g = p.g, b = p.b, a = p.a;
+  } else if constexpr (v_max == v_max_2 && _v_max != _v_max_2) {
+    r = p.r / (T)_v_max, g = p.g / (T)_v_max, b = p.b / (T)_v_max, a = p.a / (T)_v_max;
+  } else if constexpr (v_max != v_max_2 && _v_max == _v_max_2) {
+    r = p.r * (FT)v_max, g = p.g * (FT)v_max, b = p.b * (FT)v_max, a = p.a * (FT)v_max;
+  } else {
+    r = (u64)p.r * v_max / _v_max, g = (u64)p.g * v_max / _v_max;
+    b = (u64)p.b * v_max / _v_max, a = (u64)p.a * v_max / _v_max;
+  }
 }
 
-template class BasePixel<u8, 255, 128, u32, f32>;
-template class BasePixel<u16, 65535, 32767, u32, f32>;
-template class BasePixel<u32, 4294967295, 2147483647, u64, f32>;
-template class BasePixel<f32, 1, 1, f32, f32>;
-template class BasePixel<f64, 1, 1, f32, f64>;
+template BasePixelBT::BasePixel(const BasePixelST &);
+template BasePixelBT::BasePixel(const BasePixelIT &);
+template BasePixelBT::BasePixel(const BasePixelFT &);
+template BasePixelBT::BasePixel(const BasePixelDT &);
+template BasePixelST::BasePixel(const BasePixelBT &);
+template BasePixelST::BasePixel(const BasePixelIT &);
+template BasePixelST::BasePixel(const BasePixelFT &);
+template BasePixelST::BasePixel(const BasePixelDT &);
+template BasePixelIT::BasePixel(const BasePixelBT &);
+template BasePixelIT::BasePixel(const BasePixelST &);
+template BasePixelIT::BasePixel(const BasePixelFT &);
+template BasePixelIT::BasePixel(const BasePixelDT &);
+template BasePixelFT::BasePixel(const BasePixelBT &);
+template BasePixelFT::BasePixel(const BasePixelST &);
+template BasePixelFT::BasePixel(const BasePixelIT &);
+template BasePixelFT::BasePixel(const BasePixelDT &);
+template BasePixelDT::BasePixel(const BasePixelBT &);
+template BasePixelDT::BasePixel(const BasePixelST &);
+template BasePixelDT::BasePixel(const BasePixelIT &);
+template BasePixelDT::BasePixel(const BasePixelFT &);
+
+template <BasePixelTemplate>
+auto BasePixelT::to_u8() const -> PixelB {
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::to_u16() const -> PixelS {
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::to_u32() const -> PixelI {
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::to_f32() const -> PixelF {
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::to_f64() const -> PixelD {
+  return *this;
+}
+
+template class BasePixelBT;
+template class BasePixelST;
+template class BasePixelIT;
+template class BasePixelFT;
+template class BasePixelDT;
 
 } // namespace pl2d

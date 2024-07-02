@@ -23,19 +23,15 @@ void BaseTexture<T>::line_mix(i32 x1, i32 y1, i32 x2, i32 y2, const T &color) {
 
 template <typename T>
 void BaseTexture<T>::fill(RectI rect, const T &color) {
-  for (const auto row : ItRectI(rect)) {
-    for (const auto [x, y] : row) {
-      at(x, y) = color;
-    }
+  for (const auto [x, y] : rect) {
+    at(x, y) = color;
   }
 }
 
 template <typename T>
 void BaseTexture<T>::fill_mix(RectI rect, const T &color) {
-  for (const auto row : ItRectI(rect)) {
-    for (const auto [x, y] : row) {
-      at(x, y).mix(color);
-    }
+  for (const auto [x, y] : rect) {
+    at(x, y).mix(color);
   }
 }
 

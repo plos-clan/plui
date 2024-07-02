@@ -29,10 +29,10 @@ auto BasePixelT::mix(const BasePixelT &c1, const BasePixelT &c2) -> BasePixelT {
   };
 }
 
-template class BasePixel<u8, 255, 128, u32, f32>;
-template class BasePixel<u16, 65535, 32767, u32, f32>;
-template class BasePixel<u32, 4294967295, 2147483647, u64, f32>;
-template class BasePixel<f32, 1, 1, f32, f32>;
-template class BasePixel<f64, 1, 1, f32, f64>;
+template class BasePixelBT;
+template class BasePixelST;
+template class BasePixelIT;
+template class BasePixelFT;
+template class BasePixelDT;
 
 } // namespace pl2d

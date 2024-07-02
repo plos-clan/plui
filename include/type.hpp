@@ -43,8 +43,49 @@ inline constexpr bool is_base_of_v = __is_base_of(Base, Derived);
 
 static const auto null = nullptr;
 
-using ssize_t = __INTPTR_TYPE__;
-using size_t  = __UINTPTR_TYPE__;
+#undef INT8_MIN
+#undef INT8_MAX
+#undef UINT8_MAX
+#undef INT16_MIN
+#undef INT16_MAX
+#undef UINT16_MAX
+#undef INT32_MIN
+#undef INT32_MAX
+#undef UINT32_MAX
+#undef INT64_MIN
+#undef INT64_MAX
+#undef UINT64_MAX
+
+#define INT8_MIN   __INT8_MIN__
+#define INT8_MAX   __INT8_MAX__
+#define UINT8_MAX  __UINT8_MAX__
+#define INT16_MIN  __INT16_MIN__
+#define INT16_MAX  __INT16_MAX__
+#define UINT16_MAX __UINT16_MAX__
+#define INT32_MIN  __INT32_MIN__
+#define INT32_MAX  __INT32_MAX__
+#define UINT32_MAX __UINT32_MAX__
+#define INT64_MIN  __INT64_MIN__
+#define INT64_MAX  __INT64_MAX__
+#define UINT64_MAX __UINT64_MAX__
+
+#define I8_MIN  __INT8_MIN__
+#define I8_MAX  __INT8_MAX__
+#define U8_MAX  __UINT8_MAX__
+#define I16_MIN __INT16_MIN__
+#define I16_MAX __INT16_MAX__
+#define U16_MAX __UINT16_MAX__
+#define I32_MIN __INT32_MIN__
+#define I32_MAX __INT32_MAX__
+#define U32_MAX __UINT32_MAX__
+#define I64_MIN __INT64_MIN__
+#define I64_MAX __INT64_MAX__
+#define U64_MAX __UINT64_MAX__
+
+using intptr_t  = __INTPTR_TYPE__;
+using uintptr_t = __UINTPTR_TYPE__;
+using ssize_t   = __INTPTR_TYPE__;
+using size_t    = __UINTPTR_TYPE__;
 
 using uchar  = unsigned char;
 using ushort = unsigned short;

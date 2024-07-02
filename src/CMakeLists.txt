@@ -1,5 +1,5 @@
-set(CMAKE_C_FLAGS "-nostdlib")
-set(CMAKE_CXX_FLAGS "-nostdlib -nostdlib++")
+set(CMAKE_C_FLAGS "-nostdlib ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-nostdlib -nostdlib++ ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(c)
 add_subdirectory(cpp)

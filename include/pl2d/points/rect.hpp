@@ -1,7 +1,5 @@
 #pragma once
 #include "../point.hpp"
-#include "col.hpp"
-#include "row.hpp"
 #include <define.h>
 #include <type.hpp>
 
@@ -65,49 +63,57 @@ struct BaseRect {
   auto contains(const BasePoint2<T> &p) -> bool {
     return contains(p.x, p.y);
   }
+
+  // 迭代器
+  class Iterator {
+  private:
+    i32 x1, y1, x2, y2;
+    i32 x, y;
+
+  public:
+    Iterator() = delete;
+    Iterator(i32 x1, i32 y1, i32 x2, i32 y2) : x1(x1), y1(y1), x2(x2), y2(y2), x(x1), y(y1) {}
+    Iterator(i32 x1, i32 y1, i32 x2, i32 y2, i32 x, i32 y)
+        : x1(x1), y1(y1), x2(x2), y2(y2), x(x), y(y) {}
+    Iterator(const Iterator &)                         = default;
+    Iterator(Iterator &&) noexcept                     = default;
+    auto operator=(const Iterator &) -> Iterator     & = default;
+    auto operator=(Iterator &&) noexcept -> Iterator & = default;
+
+    auto operator*() -> Point2I {
+      return {x, y};
+    }
+
+    auto operator++() -> Iterator & {
+      x++;
+      if (x > x2) {
+        x = x1;
+        y++;
+      }
+      return *this;
+    }
+
+    auto operator==(const Iterator &it) const -> bool {
+      return y == it.y && x == it.x;
+    }
+
+    auto operator!=(const Iterator &it) const -> bool {
+      return y != it.y || x != it.x;
+    }
+  };
+
+  auto begin() const -> Iterator {
+    return {x1, y1, x2, y2, x1, y1};
+  }
+
+  auto end() const -> Iterator {
+    return {x1, y1, x2, y2, x1, y2 + 1};
+  }
 };
 
 using RectI = BaseRect<i32>;
 using RectF = BaseRect<f32>;
 using RectD = BaseRect<f64>;
 using Rect  = RectI;
-
-class ItRectI : RectI {
-public:
-  ItRectI(const RectI &r) : RectI(r.x1, r.y1, r.x2, r.y2) {}
-
-  class Iterator {
-  private:
-    i32 x1, x2, y1, y2;
-
-  public:
-    Iterator(i32 x1, i32 x2, i32 y1, i32 y2) : x1(x1), x2(x2), y1(y1), y2(y2) {}
-
-    auto operator*() -> ItRowI {
-      return {x1, x2, y1};
-    }
-
-    auto operator++() -> Iterator & {
-      y1++;
-      return *this;
-    }
-
-    auto operator==(const Iterator &it) const -> bool {
-      return y1 == it.y1;
-    }
-
-    auto operator!=(const Iterator &it) const -> bool {
-      return y1 != it.y1;
-    }
-  };
-
-  auto begin() const -> Iterator {
-    return {x1, x2, y1, y2};
-  }
-
-  auto end() const -> Iterator {
-    return {x1, x2, y2 + 1, y2};
-  }
-};
 
 } // namespace pl2d

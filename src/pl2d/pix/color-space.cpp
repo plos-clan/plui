@@ -7,49 +7,51 @@
 
 namespace pl2d {
 
-// void PixelB::RGB2LAB() {
-//   float r = G::rgb2xyz(this->r);
-//   float g = G::rgb2xyz(this->g);
-//   float b = G::rgb2xyz(this->b);
+#if 0
+void PixelB::RGB2LAB() {
+  float r = G::rgb2xyz(this->r);
+  float g = G::rgb2xyz(this->g);
+  float b = G::rgb2xyz(this->b);
 
-//   float x = r * 0.4124564f + g * 0.3575761f + b * 0.1804375f;
-//   float y = r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
-//   float z = r * 0.0193339f + g * 0.1191920f + b * 0.9503041f;
+  float x = r * 0.4124564f + g * 0.3575761f + b * 0.1804375f;
+  float y = r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
+  float z = r * 0.0193339f + g * 0.1191920f + b * 0.9503041f;
 
-//   x /= 0.950456f;
-//   y /= 1.0f;
-//   z /= 1.088754f;
+  x /= 0.950456f;
+  y /= 1.0f;
+  z /= 1.088754f;
 
-//   x = G::xyz2lab(x);
-//   y = G::xyz2lab(y);
-//   z = G::xyz2lab(z);
+  x = G::xyz2lab(x);
+  y = G::xyz2lab(y);
+  z = G::xyz2lab(z);
 
-//   this->r = y * 255;       // l
-//   this->g = (x - y) * 127; // a
-//   this->b = (y - z) * 127; // b
-// }
+  this->r = y * 255;       // l
+  this->g = (x - y) * 127; // a
+  this->b = (y - z) * 127; // b
+}
 
-// void PixelB::LAB2RGB() {
-//   float y = this->r;     // l
-//   float x = y + this->g; // a
-//   float z = y - this->b; // b
+void PixelB::LAB2RGB() {
+  float y = this->r;     // l
+  float x = y + this->g; // a
+  float z = y - this->b; // b
 
-//   x = G::lab2xyz(x);
-//   y = G::lab2xyz(y);
-//   z = G::lab2xyz(z);
+  x = G::lab2xyz(x);
+  y = G::lab2xyz(y);
+  z = G::lab2xyz(z);
 
-//   x *= 0.950456f;
-//   y *= 1.0f;
-//   z *= 1.088754f;
+  x *= 0.950456f;
+  y *= 1.0f;
+  z *= 1.088754f;
 
-//   float r = x * 3.2404542f + y * -1.5371385f + z * -0.4985314f;
-//   float g = x * -0.9692660f + y * 1.8760108f + z * 0.0415560f;
-//   float b = x * 0.0556434f + y * -0.2040259f + z * 1.0572252f;
+  float r = x * 3.2404542f + y * -1.5371385f + z * -0.4985314f;
+  float g = x * -0.9692660f + y * 1.8760108f + z * 0.0415560f;
+  float b = x * 0.0556434f + y * -0.2040259f + z * 1.0572252f;
 
-//   this->r = G::xyz2rgb(r);
-//   this->g = G::xyz2rgb(g);
-//   this->b = G::xyz2rgb(b);
-// }
+  this->r = G::xyz2rgb(r);
+  this->g = G::xyz2rgb(g);
+  this->b = G::xyz2rgb(b);
+}
+#endif
 
 template <BasePixelTemplate>
 void BasePixelT::RGB2HSV() {
@@ -224,9 +226,10 @@ void BasePixelT::RGB2LUV() {}
 template <BasePixelTemplate>
 void BasePixelT::LUV2RGB() {}
 
-template class BasePixel<u8, 255, 128, u32, f32>;
-template class BasePixel<u16, 65535, 32767, u32, f32>;
-template class BasePixel<u32, 4294967295, 2147483647, u64, f32>;
-template class BasePixel<f32, 1, 1, f32, f32>;
-template class BasePixel<f64, 1, 1, f32, f64>;
+template class BasePixelBT;
+template class BasePixelST;
+template class BasePixelIT;
+template class BasePixelFT;
+template class BasePixelDT;
+
 } // namespace pl2d
