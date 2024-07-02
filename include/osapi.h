@@ -129,6 +129,40 @@ finline int shmfree(int rd) {
 }
 #endif
 
+#if !NO_STD
+#  include <time.h>
+finline struct timespec realtime() {
+  struct timespec t;
+  clock_gettime(CLOCK_REALTIME, &t);
+  return t;
+}
+finline struct timespec monotonictime() {
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return t;
+}
+finline uint64_t realtime_ms() {
+  struct timespec t;
+  clock_gettime(CLOCK_REALTIME, &t);
+  return t.tv_sec * 1000 + t.tv_nsec / 1000000;
+}
+finline uint64_t monotonic_ms() {
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return t.tv_sec * 1000 + t.tv_nsec / 1000000;
+}
+finline uint64_t monotonic_us() {
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return t.tv_sec * 1000000 + t.tv_nsec / 1000;
+}
+finline uint64_t monotonic_ns() {
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return t.tv_sec * 1000000000 + t.tv_nsec;
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif

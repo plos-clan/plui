@@ -1,5 +1,6 @@
 #pragma once
 #include <define.h>
+#include <osapi.h>
 #include <type.hpp>
 
 namespace cpp {

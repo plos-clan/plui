@@ -3,7 +3,7 @@
 #include <type.h>
 
 // 颜色定义，根据 CSS Color Module Level 4
-const struct {
+static const struct {
   cstr name;
   union {
     struct {

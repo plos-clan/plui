@@ -23,31 +23,62 @@
 #define NO_STD 0
 #include <define.h>
 #include <osapi.h>
+#include <plds/server/api.h>
 #include <type.h>
 
-void next_event();
-void screen_flush();
-int  test_main(void *buffer, u32 width, u32 height);
-
-u32 screen_width  = 800;
-u32 screen_height = 600;
+u32 screen_width;
+u32 screen_height;
 
 Display *display;
 int      screen;
 Window   window;
 
-static void init_xlib() {
+Atom wmDeleteMessage;
+
+XShmSegmentInfo shm_info;
+XImage         *image;
+
+bool exit_flag = false;
+
+void program_exit() {
+  exit_flag = true;
+}
+
+void create_img(u32 width, u32 height) {
+  image            = XShmCreateImage(display, NULL, 24, ZPixmap, 0, &shm_info, width, height);
+  shm_info.shmid   = shmalloc((size_t)width * height * 4);
+  shm_info.shmaddr = image->data = shmref(shm_info.shmid, null);
+  shm_info.readOnly              = false;
+  XShmAttach(display, &shm_info);
+}
+
+void destroy_img() {
+  XShmDetach(display, &shm_info);
+  shmunref(shm_info.shmaddr);
+  XDestroyImage(image);
+}
+
+void recreate_img(u32 width, u32 height) {
+  if (image) destroy_img();
+  create_img(width, height);
+}
+
+static void init_xlib(u32 width, u32 height) {
+  screen_width = width, screen_height = height;
+
   display     = XOpenDisplay(NULL);
   screen      = DefaultScreen(display);
   Window root = RootWindow(display, screen);
-  window      = XCreateSimpleWindow(display, root, 0, 0, screen_width, screen_height, 1,
-                                    BlackPixel(display, screen), WhitePixel(display, screen));
+  window = XCreateSimpleWindow(display, root, 0, 0, width, height, 1, BlackPixel(display, screen),
+                               WhitePixel(display, screen));
   XSelectInput(display, window,
-               ExposureMask | KeyPressMask | PointerMotionMask | ButtonPressMask |
+               ExposureMask | KeyPressMask | KeyReleaseMask | PointerMotionMask | ButtonPressMask |
                    ButtonReleaseMask | ButtonMotionMask | EnterWindowMask | LeaveWindowMask |
                    StructureNotifyMask);
   XMapWindow(display, window);
   XFlush(display);
+
+  wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", false);
 
   { // 隐藏鼠标指针
     XColor  black   = {};
@@ -58,40 +89,84 @@ static void init_xlib() {
     XFreeCursor(display, cursor);
     XFreePixmap(display, bitmap);
   }
-}
 
-XShmSegmentInfo shm_info;
-XImage         *image;
+  create_img(width, height);
+}
 
 void screen_flush() {
   XShmPutImage(display, window, DefaultGC(display, screen), image, 0, 0, 0, 0, screen_width,
                screen_height, true);
+
+  // static u64 old_time = 0;
+  // u64        time     = monotonic_us();
+  // printf("%lf\n", 1e6 / (time - old_time));
+  // old_time = time;
 }
 
-void create_img(u32 width, u32 height) {
-  if (image) {
-    XShmDetach(display, &shm_info);
-    shmunref(shm_info.shmaddr);
-    XDestroyImage(image);
+int loop_body(XEvent e) {
+  plds_flush();
+
+  if (e.type == ClientMessage) {
+    if (e.xclient.message_type == wmDeleteMessage) goto quit;
   }
 
-  image            = XShmCreateImage(display, NULL, 24, ZPixmap, 0, &shm_info, width, height);
-  shm_info.shmid   = shmalloc((size_t)width * height * 4);
-  shm_info.shmaddr = image->data = shmref(shm_info.shmid, null);
-  shm_info.readOnly              = false;
-  XShmAttach(display, &shm_info);
-}
+  if (e.type == Expose) {}
 
-void next_event() {
-  static XEvent event;
-  XNextEvent(display, &event);
+  if (e.type == ButtonPress) {
+    if (--e.xbutton.button < 3) plds_on_button_down(e.xbutton.button, e.xbutton.x, e.xbutton.y);
+    if (e.xbutton.button == 3) plds_on_scroll(-3);
+    if (e.xbutton.button == 4) plds_on_scroll(3);
+  }
+
+  if (e.type == ButtonRelease) {
+    if (--e.xbutton.button < 3) plds_on_button_up(e.xbutton.button, e.xbutton.x, e.xbutton.y);
+  }
+
+  if (e.type == MotionNotify) { plds_on_mouse_move(e.xmotion.x, e.xmotion.y); }
+
+  if (e.type == KeyPress) {
+    KeySym key;
+    XLookupString(&e.xkey, NULL, 0, &key, NULL);
+    plds_on_key_down(key);
+  }
+
+  if (e.type == KeyRelease) {
+    KeySym key;
+    XLookupString(&e.xkey, NULL, 0, &key, NULL);
+    plds_on_key_up(key);
+  }
+
+  if (e.type == ConfigureNotify) {
+    if (e.xconfigure.width != screen_width || e.xconfigure.height != screen_height) {
+      screen_width  = e.xconfigure.width;
+      screen_height = e.xconfigure.height;
+      recreate_img(screen_width, screen_height);
+      plds_on_screen_resize(image->data, screen_width, screen_height);
+      plds_flush();
+    }
+  }
+
+  return 0;
+
+quit:
+  exit_flag = true;
+  return 0;
 }
 
 int main() {
-  init_xlib();
+  init_xlib(1280, 720);
 
-  create_img(screen_width, screen_height);
-  int ret = test_main(image->data, screen_width, screen_height);
+  int ret = plds_on_screen_resize(image->data, screen_width, screen_height);
+  if (ret < 0) return -ret;
+
+  XEvent event;
+  while (!exit_flag) {
+    XNextEvent(display, &event);
+    ret = loop_body(event);
+    if (ret) break;
+  }
+
+  destroy_img();
 
   XDestroyWindow(display, window);
   XCloseDisplay(display);

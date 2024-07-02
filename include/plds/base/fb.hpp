@@ -109,6 +109,10 @@ struct FrameBuffer {
   auto operator=(const FrameBuffer &) -> FrameBuffer     & = delete;
   auto operator=(FrameBuffer &&) noexcept -> FrameBuffer & = default;
 
+  void reset() {
+    *this = {};
+  }
+
   // 设置好需要的参数后使用 init 来自动填充其它参数
   auto init() -> int; // 返回 0: 正常，<0:异常
 

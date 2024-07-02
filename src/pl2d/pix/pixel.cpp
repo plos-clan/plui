@@ -53,7 +53,8 @@ BasePixelT::BasePixel(const _BasePixelT &p) {
   } else if constexpr (v_max == v_max_2 && _v_max != _v_max_2) {
     r = p.r / (T)_v_max, g = p.g / (T)_v_max, b = p.b / (T)_v_max, a = p.a / (T)_v_max;
   } else if constexpr (v_max != v_max_2 && _v_max == _v_max_2) {
-    r = p.r * (FT)v_max, g = p.g * (FT)v_max, b = p.b * (FT)v_max, a = p.a * (FT)v_max;
+    r = cpp::clamp((FT)p.r, (FT)0, (FT)1) * v_max, g = cpp::clamp((FT)p.g, (FT)0, (FT)1) * v_max;
+    b = cpp::clamp((FT)p.b, (FT)0, (FT)1) * v_max, a = cpp::clamp((FT)p.a, (FT)0, (FT)1) * v_max;
   } else {
     r = (u64)p.r * v_max / _v_max, g = (u64)p.g * v_max / _v_max;
     b = (u64)p.b * v_max / _v_max, a = (u64)p.a * v_max / _v_max;

@@ -60,6 +60,8 @@ BaseTexture<T>::BaseTexture(BaseTexture &&tex) noexcept {
 
 template <typename T>
 auto BaseTexture<T>::operator=(BaseTexture &&tex) noexcept -> BaseTexture & {
+  if (this == &tex) return *this;
+  this->~BaseTexture();
   pixels           = tex.pixels;
   own_pixels       = tex.own_pixels;
   width            = tex.width;
