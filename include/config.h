@@ -8,9 +8,16 @@
 #define STD_SAFE_API 1 // 调用标准库函数时检查参数
 #define SAFE_API     1 // 调用本库的函数时检查参数
 
-#define COLOR_USE_BGR 1 // 使用 BGR 而不是 RGB 的通道顺序
+// 使用16进制写颜色值的时候使用 0xRRGGBBAA 的顺序
+// 而不是使用内存中的顺序，比如 RGBA 小端序 中的 0xAABBGGRR
+#define COLOR_READABLE_HEX 1
 
-// #define COLOR_RGB_LINEAR 1 // 使用线性 RGB 而不是 sRGB 来存储颜色
+// 使用 BGR 而不是 RGB 的通道顺序
+// 此项对通道分离的 FrameBuffer 无效，其通道顺序仍然按照 RGBA
+#define COLOR_USE_BGR 1
+
+// 未完成，请勿设置此项
+#define COLOR_RGB_LINEAR 0 // 使用线性 RGB 而不是 sRGB 来存储颜色
 
 // 是否启用快速的色彩空间变换等
 #define FAST_COLOR_TRANSFORM 1

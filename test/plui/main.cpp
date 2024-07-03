@@ -30,7 +30,7 @@ void flush() {
   i              += .01;
   p.LAB2RGB();
   // printf("%f %f %f\n", p.r, p.g, p.b);
-  tex.fill(tex.size_rect(), p);
+  tex.fill(tex.size_rect(), 0xff00ffff);
   fb.flush(tex);
   screen_flush();
 }

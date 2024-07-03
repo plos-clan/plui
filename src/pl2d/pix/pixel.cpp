@@ -8,10 +8,24 @@ namespace pl2d {
 
 template <BasePixelTemplate>
 BasePixelT::BasePixel(u32 c) {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
-#else
+#if COLOR_READABLE_HEX
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   byte r = c >> 24, g = c >> 16, b = c >> 8, a;
+#  else
+  byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
+#  endif
+#elif COLOR_USE_BGR
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  byte b = c, g = c >> 8, r = c >> 16, a = c >> 24;
+#  else
+  byte b = c >> 24, g = c >> 16, r = c >> 8, a;
+#  endif
+#else
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
+#  else
+  byte r = c >> 24, g = c >> 16, b = c >> 8, a;
+#  endif
 #endif
   if constexpr (std::is_floating_point_v<T>) {
     this->r = r / (T)255;
