@@ -1,29 +1,10 @@
+#include <c.h>
 #include <cpp.hpp>
 #include <define.h>
 #include <pl2d.hpp>
 #include <type.hpp>
 
 namespace pl2d {
-
-auto gamma(f32 x, f32 g) -> f32 {
-  return cpp::pow(x, g);
-}
-
-auto gamma(f64 x, f64 g) -> f64 {
-  return cpp::pow(x, g);
-}
-
-auto igamma(f32 x, f32 g) -> f32 {
-  return cpp::pow(x, 1.f / g);
-}
-
-auto igamma(f64 x, f64 g) -> f64 {
-  return cpp::pow(x, 1.f / g);
-}
-
-//* ----------------------------------------------------------------------------------------------------
-//; 构造
-//* ----------------------------------------------------------------------------------------------------
 
 template <BasePixelTemplate>
 BasePixelT::BasePixel(u32 c) {
@@ -38,26 +19,26 @@ BasePixelT::BasePixel(u32 c) {
     this->b = b / (T)255;
     this->a = a / (T)255;
   } else {
-    this->r = (u64)r * v_max / 255;
-    this->g = (u64)g * v_max / 255;
-    this->b = (u64)b * v_max / 255;
-    this->a = (u64)a * v_max / 255;
+    this->r = (u64)r * T_MAX / 255;
+    this->g = (u64)g * T_MAX / 255;
+    this->b = (u64)b * T_MAX / 255;
+    this->a = (u64)a * T_MAX / 255;
   }
 }
 
 template <BasePixelTemplate>
 template <_BasePixelTemplate>
 BasePixelT::BasePixel(const _BasePixelT &p) {
-  if constexpr (v_max == v_max_2 && _v_max == _v_max_2) {
+  if constexpr (T_MAX == T_MAX_2 && _T_MAX == _T_MAX_2) {
     r = p.r, g = p.g, b = p.b, a = p.a;
-  } else if constexpr (v_max == v_max_2 && _v_max != _v_max_2) {
-    r = p.r / (T)_v_max, g = p.g / (T)_v_max, b = p.b / (T)_v_max, a = p.a / (T)_v_max;
-  } else if constexpr (v_max != v_max_2 && _v_max == _v_max_2) {
-    r = cpp::clamp((FT)p.r, (FT)0, (FT)1) * v_max, g = cpp::clamp((FT)p.g, (FT)0, (FT)1) * v_max;
-    b = cpp::clamp((FT)p.b, (FT)0, (FT)1) * v_max, a = cpp::clamp((FT)p.a, (FT)0, (FT)1) * v_max;
+  } else if constexpr (T_MAX == T_MAX_2 && _T_MAX != _T_MAX_2) {
+    r = p.r / (T)_T_MAX, g = p.g / (T)_T_MAX, b = p.b / (T)_T_MAX, a = p.a / (T)_T_MAX;
+  } else if constexpr (T_MAX != T_MAX_2 && _T_MAX == _T_MAX_2) {
+    r = cpp::clamp((FT)p.r, (FT)0, (FT)1) * T_MAX, g = cpp::clamp((FT)p.g, (FT)0, (FT)1) * T_MAX;
+    b = cpp::clamp((FT)p.b, (FT)0, (FT)1) * T_MAX, a = cpp::clamp((FT)p.a, (FT)0, (FT)1) * T_MAX;
   } else {
-    r = (u64)p.r * v_max / _v_max, g = (u64)p.g * v_max / _v_max;
-    b = (u64)p.b * v_max / _v_max, a = (u64)p.a * v_max / _v_max;
+    r = (u64)p.r * T_MAX / _T_MAX, g = (u64)p.g * T_MAX / _T_MAX;
+    b = (u64)p.b * T_MAX / _T_MAX, a = (u64)p.a * T_MAX / _T_MAX;
   }
 }
 
@@ -81,6 +62,12 @@ template BasePixelDT::BasePixel(const BasePixelBT &);
 template BasePixelDT::BasePixel(const BasePixelST &);
 template BasePixelDT::BasePixel(const BasePixelIT &);
 template BasePixelDT::BasePixel(const BasePixelFT &);
+
+template <BasePixelTemplate>
+BasePixelT::operator u32() {
+  PixelB p = to_u8();
+  return RGBA(p.r, p.g, p.b, p.a);
+}
 
 template <BasePixelTemplate>
 auto BasePixelT::to_u8() const -> PixelB {

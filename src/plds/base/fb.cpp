@@ -125,7 +125,7 @@ void FrameBuffer::clear(byte b) {
 }
 
 void FrameBuffer::init_texture(pl2d::TextureB &tex) {
-  if (pixfmt == PixFmt::RGBA && padding == 4 && pitch % 4 == 0) {
+  if (pixfmt == texture_pixfmt && padding == 4 && pitch % 4 == 0) {
     tex = pl2d::TextureB((pl2d::PixelB *)pix[0], width, height, pitch / 4);
   } else {
     tex = pl2d::TextureB(width, height);
@@ -135,7 +135,7 @@ void FrameBuffer::init_texture(pl2d::TextureF &tex) {
   tex = pl2d::TextureF(width, height);
 }
 auto FrameBuffer::new_texture_b() -> pl2d::TextureB * {
-  if (pixfmt == PixFmt::RGBA && padding == 4 && pitch % 4 == 0) {
+  if (pixfmt == texture_pixfmt && padding == 4 && pitch % 4 == 0) {
     return new pl2d::TextureB((pl2d::PixelB *)pix[0], width, height, pitch / 4);
   } else {
     return new pl2d::TextureB(width, height);

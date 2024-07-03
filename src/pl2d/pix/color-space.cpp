@@ -55,9 +55,9 @@ void PixelB::LAB2RGB() {
 
 template <BasePixelTemplate>
 void BasePixelT::RGB2HSV() {
-  FT r = this->r / (FT)v_max;
-  FT g = this->g / (FT)v_max;
-  FT b = this->b / (FT)v_max;
+  FT r = this->r / (FT)T_MAX;
+  FT g = this->g / (FT)T_MAX;
+  FT b = this->b / (FT)T_MAX;
 
   FT max   = cpp::max(r, g, b);
   FT min   = cpp::min(r, g, b);
@@ -70,16 +70,16 @@ void BasePixelT::RGB2HSV() {
     if (h < 0) h += 1;
   }
 
-  this->r = h * (FT)v_max;
-  this->g = s * (FT)v_max;
-  this->b = v * (FT)v_max;
+  this->r = h * (FT)T_MAX;
+  this->g = s * (FT)T_MAX;
+  this->b = v * (FT)T_MAX;
 }
 
 template <BasePixelTemplate>
 void BasePixelT::HSV2RGB() {
-  FT h = this->r / (FT)v_max * (FT)6;
-  FT s = this->g / (FT)v_max;
-  FT v = this->b / (FT)v_max;
+  FT h = this->r / (FT)T_MAX * (FT)6;
+  FT s = this->g / (FT)T_MAX;
+  FT v = this->b / (FT)T_MAX;
 
   FT c = v * s;
   FT x = c * (1 - cpp::abs(cpp::mod(h, 2) - 1));
@@ -100,16 +100,16 @@ void BasePixelT::HSV2RGB() {
     r = c, g = 0, b = x;
   }
 
-  this->r = (r + m) * (FT)v_max;
-  this->g = (g + m) * (FT)v_max;
-  this->b = (b + m) * (FT)v_max;
+  this->r = (r + m) * (FT)T_MAX;
+  this->g = (g + m) * (FT)T_MAX;
+  this->b = (b + m) * (FT)T_MAX;
 }
 
 template <BasePixelTemplate>
 void BasePixelT::RGB2HSL() {
-  FT r = this->r / (FT)v_max;
-  FT g = this->g / (FT)v_max;
-  FT b = this->b / (FT)v_max;
+  FT r = this->r / (FT)T_MAX;
+  FT g = this->g / (FT)T_MAX;
+  FT b = this->b / (FT)T_MAX;
 
   FT max   = cpp::max(r, g, b);
   FT min   = cpp::min(r, g, b);
@@ -123,9 +123,9 @@ void BasePixelT::RGB2HSL() {
   }
   l /= 2;
 
-  this->r = h * (FT)v_max;
-  this->g = s * (FT)v_max;
-  this->b = l * (FT)v_max;
+  this->r = h * (FT)T_MAX;
+  this->g = s * (FT)T_MAX;
+  this->b = l * (FT)T_MAX;
 }
 
 template <BasePixelTemplate>
@@ -153,16 +153,16 @@ void BasePixelT::HSL2RGB() {
     r = c, g = 0, b = x;
   }
 
-  this->r = (r + m) * (FT)v_max;
-  this->g = (g + m) * (FT)v_max;
-  this->b = (b + m) * (FT)v_max;
+  this->r = (r + m) * (FT)T_MAX;
+  this->g = (g + m) * (FT)T_MAX;
+  this->b = (b + m) * (FT)T_MAX;
 }
 
 template <BasePixelTemplate>
 void BasePixelT::RGB2LAB() {
-  FT r = G::rgb2xyz(this->r / (FT)v_max);
-  FT g = G::rgb2xyz(this->g / (FT)v_max);
-  FT b = G::rgb2xyz(this->b / (FT)v_max);
+  FT r = G::rgb2xyz(this->r / (FT)T_MAX);
+  FT g = G::rgb2xyz(this->g / (FT)T_MAX);
+  FT b = G::rgb2xyz(this->b / (FT)T_MAX);
 
   FT x = r * 0.4124564f + g * 0.3575761f + b * 0.1804375f;
   FT y = r * 0.2126729f + g * 0.7151522f + b * 0.0721750f;
@@ -176,16 +176,16 @@ void BasePixelT::RGB2LAB() {
   y = G::xyz2lab(y);
   z = G::xyz2lab(z);
 
-  this->r = y * (FT)v_max;                                                // l
-  this->g = (x - y) * (FT)v_max_2 + (v_max != v_max_2 ? v_max_2 + 1 : 0); // a
-  this->b = (y - z) * (FT)v_max_2 + (v_max != v_max_2 ? v_max_2 + 1 : 0); // b
+  this->r = y * (FT)T_MAX;                                                // l
+  this->g = (x - y) * (FT)T_MAX_2 + (T_MAX != T_MAX_2 ? T_MAX_2 + 1 : 0); // a
+  this->b = (y - z) * (FT)T_MAX_2 + (T_MAX != T_MAX_2 ? T_MAX_2 + 1 : 0); // b
 }
 
 template <BasePixelTemplate>
 void BasePixelT::LAB2RGB() {
-  FT y = this->r / (FT)v_max;                                                    // l
-  FT x = y + ((FT)this->g - (v_max != v_max_2 ? v_max_2 + 1 : 0)) / (FT)v_max_2; // a
-  FT z = y - ((FT)this->b - (v_max != v_max_2 ? v_max_2 + 1 : 0)) / (FT)v_max_2; // b
+  FT y = this->r / (FT)T_MAX;                                                    // l
+  FT x = y + ((FT)this->g - (T_MAX != T_MAX_2 ? T_MAX_2 + 1 : 0)) / (FT)T_MAX_2; // a
+  FT z = y - ((FT)this->b - (T_MAX != T_MAX_2 ? T_MAX_2 + 1 : 0)) / (FT)T_MAX_2; // b
 
   x = G::lab2xyz(x);
   y = G::lab2xyz(y);
@@ -199,9 +199,9 @@ void BasePixelT::LAB2RGB() {
   float g = x * -0.9692660f + y * 1.8760108f + z * 0.0415560f;
   float b = x * 0.0556434f + y * -0.2040259f + z * 1.0572252f;
 
-  this->r = G::xyz2rgb(r) * (FT)v_max;
-  this->g = G::xyz2rgb(g) * (FT)v_max;
-  this->b = G::xyz2rgb(b) * (FT)v_max;
+  this->r = G::xyz2rgb(r) * (FT)T_MAX;
+  this->g = G::xyz2rgb(g) * (FT)T_MAX;
+  this->b = G::xyz2rgb(b) * (FT)T_MAX;
 }
 
 //;  未实现

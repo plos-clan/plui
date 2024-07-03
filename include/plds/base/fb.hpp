@@ -65,42 +65,48 @@ enum class PalFmt : u32 {
   ABGR = ABGR8888,
 };
 
+#if COLOR_USE_BGR
+constexpr PixFmt texture_pixfmt = PixFmt::BGRA;
+#else
+constexpr PixFmt texture_pixfmt = PixFmt::RGBA;
+#endif
+
 struct FrameBuffer {
-  union {                        //
-    void *pix[4] = {};           //
-    u8   *pix8[4];               //
-    u16  *pix16[4];              //
-    u32  *pix32[4];              //
-    struct {                     //
-      byte *plane1;              //
-      byte *plane2;              //
-      byte *plane3;              //
-      byte *plane4;              //
-    };                           //
-  };                             // 缓冲区
-  union {                        //
-    u32 plane_size[4] = {};      //
-    struct {                     //
-      u32 plane1_size;           //
-      u32 plane2_size;           //
-      u32 plane3_size;           //
-      u32 plane4_size;           //
-    };                           //
-  };                             // 缓冲区大小
-  u32   *pal     = null;         // 调色板
-  u32    width   = 0;            // 宽度（可自动计算） width = pitch / size_of_pixel
-  u32    height  = 0;            // 高度
-  u32    pitch   = 0;            // pitch = width * size_of_pixel
-  u32    size    = 0;            // pitch * height
-  u16    bpp     = 0;            // 像素深度（可自动计算） size_of_pixel * 8
-  u8     padding = 0;            // 按多少字节对齐
-  u8     channel = 0;            //
-  PixFmt pixfmt  = PixFmt::RGBA; // 像素格式
-  PalFmt palfmt  = PalFmt::None; // 像素格式
-  bool   alpha   = false;        // 是否有alpha通道（可自动计算）
-  bool   plane   = false;        // 是否通道分离
-  bool   ready   = false;        //
-  void (*cb_flushed)();          //
+  union {                          //
+    void *pix[4] = {};             //
+    u8   *pix8[4];                 //
+    u16  *pix16[4];                //
+    u32  *pix32[4];                //
+    struct {                       //
+      byte *plane1;                //
+      byte *plane2;                //
+      byte *plane3;                //
+      byte *plane4;                //
+    };                             //
+  };                               // 缓冲区
+  union {                          //
+    u32 plane_size[4] = {};        //
+    struct {                       //
+      u32 plane1_size;             //
+      u32 plane2_size;             //
+      u32 plane3_size;             //
+      u32 plane4_size;             //
+    };                             //
+  };                               // 缓冲区大小
+  u32   *pal     = null;           // 调色板
+  u32    width   = 0;              // 宽度（可自动计算） width = pitch / size_of_pixel
+  u32    height  = 0;              // 高度
+  u32    pitch   = 0;              // pitch = width * size_of_pixel
+  u32    size    = 0;              // pitch * height
+  u16    bpp     = 0;              // 像素深度（可自动计算） size_of_pixel * 8
+  u8     padding = 0;              // 按多少字节对齐
+  u8     channel = 0;              //
+  PixFmt pixfmt  = texture_pixfmt; // 像素格式
+  PalFmt palfmt  = PalFmt::None;   // 像素格式
+  bool   alpha   = false;          // 是否有alpha通道（可自动计算）
+  bool   plane   = false;          // 是否通道分离
+  bool   ready   = false;          //
+  void (*cb_flushed)();            //
 
   FrameBuffer()                        = default;
   FrameBuffer(const FrameBuffer &)     = delete;

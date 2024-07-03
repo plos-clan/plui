@@ -4,16 +4,20 @@
 // 没有标准库你也需要提供一部分函数
 #define NO_STD 1
 
-// 忽略非法的参数 (定义即开启)
-#define STD_SAFE_API // 调用标准库函数时检查参数
-#define SAFE_API     // 调用本库的函数时检查参数
+// 忽略非法的参数
+#define STD_SAFE_API 1 // 调用标准库函数时检查参数
+#define SAFE_API     1 // 调用本库的函数时检查参数
+
+#define COLOR_USE_BGR 1 // 使用 BGR 而不是 RGB 的通道顺序
+
+// #define COLOR_RGB_LINEAR 1 // 使用线性 RGB 而不是 sRGB 来存储颜色
 
 // 是否启用快速的色彩空间变换等
 #define FAST_COLOR_TRANSFORM 1
 
 // 是否启用更好的颜色插值算法（更好但更慢）
 #define BETTER_COLOR_INTERPOLATE 1
-#define FAST_COLOR_INTERPOLATE   1
+#define FAST_COLOR_INTERPOLATE   1 // 目前并没有实现
 
 //** 在没有标准库的情况下 OSAPI 宏才有效 **
 

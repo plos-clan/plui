@@ -33,25 +33,21 @@ enum EColorSpaceConv {
 };
 } // namespace color
 
-// Gamma校正的参数
-// 目前似乎用不上
-constexpr f32 GAMMA = 2.2f;
-
-dlimport auto gamma(f32 x, f32 g = GAMMA) -> f32;
-dlimport auto gamma(f64 x, f64 g = GAMMA) -> f64;
-dlimport auto igamma(f32 x, f32 g = GAMMA) -> f32;
-dlimport auto igamma(f64 x, f64 g = GAMMA) -> f64;
+dlimport auto gamma_correct(f32 x) -> f32;
+dlimport auto gamma_correct(f64 x) -> f64;
+dlimport auto reverse_gamma(f32 x) -> f32;
+dlimport auto reverse_gamma(f64 x) -> f64;
 
 #define BasePixelTemplate                                                                          \
-  typename T, typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max,              \
-      typename std::conditional_t<std::is_floating_point_v<T>, i32, T> v_max_2, typename T2,       \
+  typename T, typename std::conditional_t<std::is_floating_point_v<T>, i32, T> T_MAX,              \
+      typename std::conditional_t<std::is_floating_point_v<T>, i32, T> T_MAX_2, typename T2,       \
       typename FT
 #define _BasePixelTemplate                                                                         \
-  typename _T, typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _v_max,          \
-      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _v_max_2, typename _T2,   \
+  typename _T, typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _T_MAX,          \
+      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _T_MAX_2, typename _T2,   \
       typename _FT
-#define BasePixelT  BasePixel<T, v_max, v_max_2, T2, FT>
-#define _BasePixelT BasePixel<_T, _v_max, _v_max_2, _T2, _FT>
+#define BasePixelT  BasePixel<T, T_MAX, T_MAX_2, T2, FT>
+#define _BasePixelT BasePixel<_T, _T_MAX, _T_MAX_2, _T2, _FT>
 
 template <BasePixelTemplate>
 struct BasePixel;
@@ -73,14 +69,18 @@ template <BasePixelTemplate>
 struct BasePixel {
   union {
     struct {
+#if COLOR_USE_BGR
+      T b = 0, g = 0, r = 0, a = 0;
+#else
       T r = 0, g = 0, b = 0, a = 0;
+#endif
     };
     T d[4];
   };
 
   BasePixel() = default;
   BasePixel(u32);
-  BasePixel(T r, T g, T b) : r(r), g(g), b(b), a(v_max) {}
+  BasePixel(T r, T g, T b) : r(r), g(g), b(b), a(T_MAX) {}
   BasePixel(T r, T g, T b, T a) : r(r), g(g), b(b), a(a) {}
   BasePixel(const BasePixel &)                         = default;
   BasePixel(BasePixel &&) noexcept                     = default;
@@ -89,6 +89,8 @@ struct BasePixel {
 
   template <_BasePixelTemplate>
   BasePixel(const _BasePixelT &p);
+
+  operator u32();
 
   auto operator[](size_t n) const -> T {
     return d[n];
@@ -108,7 +110,9 @@ struct BasePixel {
   void        mix(const BasePixel &s);
   static auto mix(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
 
-  auto to_grayscale() const -> BasePixel;
+  auto grayscale() const -> BasePixel;
+  auto gamma_correct() const -> BasePixel;
+  auto reverse_gamma() const -> BasePixel;
 
   auto to_u8() const -> PixelB;
   auto to_u16() const -> PixelS;

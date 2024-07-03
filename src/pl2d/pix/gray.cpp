@@ -6,7 +6,7 @@
 namespace pl2d {
 
 template <BasePixelTemplate>
-auto BasePixelT::to_grayscale() const -> BasePixelT {
+auto BasePixelT::grayscale() const -> BasePixelT {
   T gray = r * (FT).299 + g * (FT).587 + b * (FT).114;
   return {gray, gray, gray, a};
 }
@@ -18,7 +18,7 @@ void BasePixelT::RGB2Grayscale() {
 
 #if FAST_COLOR_TRANSFORM
 template <>
-auto BasePixelBT::to_grayscale() const -> BasePixelBT {
+auto BasePixelBT::grayscale() const -> BasePixelBT {
   byte gray = (r * 19595 + g * 38470 + b * 7471) / 65536;
   return BasePixelBT{gray, gray, gray, a};
 }
@@ -29,7 +29,7 @@ void BasePixelBT::RGB2Grayscale() {
 }
 
 template <>
-auto BasePixelST::to_grayscale() const -> BasePixelST {
+auto BasePixelST::grayscale() const -> BasePixelST {
   u16 gray = (r * 19595U + g * 38470U + b * 7471U) / 65536U;
   return PixelS{gray, gray, gray, a};
 }
@@ -40,7 +40,7 @@ void BasePixelST::RGB2Grayscale() {
 }
 
 template <>
-auto BasePixelIT::to_grayscale() const -> BasePixelIT {
+auto BasePixelIT::grayscale() const -> BasePixelIT {
   u32 gray = (r * 19595ULL + g * 38470ULL + b * 7471ULL) / 65536ULL;
   return PixelI{gray, gray, gray, a};
 }

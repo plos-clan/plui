@@ -179,7 +179,7 @@ public:
 
 using String = BaseString<char>;
 
-#ifdef SAFE_API
+#if SAFE_API
 static auto utf8_to_32(const u8 *&s) -> u32 {
   u32 code;
   if (s[0] < 0x80) { // ASCII字符（单字节）
