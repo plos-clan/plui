@@ -8,6 +8,7 @@ extern "C" {
 #include "c/crypto.h"
 #include "c/errno.h"
 #include "c/error.h"
+#include "c/fft.h"
 #include "c/file.h"
 #include "c/math.h"
 #include "c/rbtree.h"

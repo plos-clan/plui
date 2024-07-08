@@ -107,6 +107,12 @@ struct BaseTexture {
   // 未实现
   void trangle();
   void polygon();
+  auto paste_from(const BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
+  auto paste_to(BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
+  auto paste_to(BaseTexture &tex, i32 x, i32 y) const -> const BaseTexture &;
+  auto paste_from_mix(const BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
+  auto paste_to_mix(BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
+  auto paste_to_mix(BaseTexture &tex, i32 x, i32 y) const -> const BaseTexture &;
 };
 
 using TextureB = BaseTexture<PixelB>;

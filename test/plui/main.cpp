@@ -1,8 +1,21 @@
+#include <config.h>
+#undef NO_STD
+#define NO_STD 0
 #include <cpp.hpp>
 #include <define.h>
 #include <pl2d.hpp>
 #include <plds.hpp>
+#include <plui.hpp>
 #include <type.hpp>
+
+#include <string>
+
+extern "C" {
+void abort();
+}
+
+#include "plds/base/fb.hpp"
+#include "qoi.h"
 
 extern "C" {
 void next_event();
@@ -21,20 +34,51 @@ enum class Event : u32 {
 
 namespace plds {
 
-cpp::List<void *> window_list;
+// plui::Element root;
 
 FrameBuffer    screen_fb;
 pl2d::TextureB screen_tex;
 
+// pl2d::TextureB img_tex;
+
+pl2d::TextureB frame_tex[19];
+
 static auto &fb  = screen_fb;
 static auto &tex = screen_tex;
 
-void flush() {
-  static float i  = 0;
-  pl2d::PixelF p  = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
-  i              += .01;
+auto load_qoi_to_tex(const char *filename, pl2d::TextureB &tex) {
+  int   img_width, img_height, img_channels;
+  void *data = qoi_load(filename, &img_width, &img_height, &img_channels);
+  if (data == null) abort();
+  FrameBuffer img_fb;
+  img_fb.width  = img_width;
+  img_fb.height = img_height;
+  img_fb.pixfmt = img_channels == 3 ? plds::PixFmt::RGB : plds::PixFmt::RGBA;
+  img_fb.pix[0] = data;
+  img_fb.init();
+  img_fb.init_texture(tex);
+  img_fb.copy_to(tex);
+}
+
+auto init(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
+  for (int i = 0; i < 18; i++) {
+    load_qoi_to_tex(("frame" + std::to_string(i) + ".qoi").c_str(), frame_tex[i]);
+  }
+
+  return on::screen_resize(buffer, width, height, fmt);
+}
+
+int nframe = 0;
+
+void flush(bool force) {
+  if (!force) nframe++;
+
+  float        i = (f32)nframe * .01f;
+  pl2d::PixelF p = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
   p.LAB2RGB();
   tex.fill(tex.size_rect(), p);
+  // img_tex.paste_to(tex, 20, 20);
+  frame_tex[nframe / 60 % 19].paste_to(tex, 20, 20);
   fb.flush(tex);
   screen_flush();
 }

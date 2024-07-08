@@ -98,15 +98,18 @@ static void init_xlib(u32 width, u32 height) {
 void screen_flush() {
   XShmPutImage(display, window, DefaultGC(display, screen), image, 0, 0, 0, 0, screen_width,
                screen_height, true);
+  XFlush(display);
 
   // static u64 old_time = 0;
   // u64        time     = monotonic_us();
   // printf("%lf\n", 1e6 / (time - old_time));
+  // i64        delay = (1e6 / 60) - (time - old_time);
+  // if (delay > 0) usleep(delay);
   // old_time = time;
 }
 
-int loop_body(XEvent e) {
-  plds_flush();
+int loop_body(XEvent e, int pending) {
+  if (pending == 0) plds_flush(false);
 
   if (e.type == ClientMessage) {
     if (e.xclient.message_type == wmDeleteMessage) goto quit;
@@ -144,7 +147,7 @@ int loop_body(XEvent e) {
       screen_height = e.xconfigure.height;
       recreate_img(screen_width, screen_height);
       plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
-      plds_flush();
+      plds_flush(true);
     }
   }
 
@@ -158,14 +161,24 @@ quit:
 int main() {
   init_xlib(1280, 720);
 
-  int ret = plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
+  int ret = plds_init(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
   if (ret < 0) return -ret;
 
   XEvent event;
   while (!exit_flag) {
     XNextEvent(display, &event);
-    ret = loop_body(event);
+    int pending = XPending(display);
+
+    ret = loop_body(event, pending);
     if (ret) break;
+
+    if (pending == 0) {
+      static u64 old_time = 0;
+      u64        time     = monotonic_us();
+      i64        delay    = (1e6 / 60) - (time - old_time);
+      old_time            = time;
+      if (delay > 0) usleep(delay);
+    }
   }
 
   destroy_img();

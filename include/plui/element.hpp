@@ -1,7 +1,8 @@
 #pragma once
+#include "event.hpp"
+#include "pos.hpp"
 #include <define.h>
 #include <pl2d.hpp>
-#include <plui.hpp>
 #include <type.hpp>
 
 namespace plui {
@@ -23,16 +24,21 @@ struct Style {
   // font;
 
   bool fit_content;
+
+  Style() = default;
 };
 
 using ChildList = cpp::List<Element *>;
 
 struct Element : Style {
-  struct {
-    i32 x;      // 元素左上角横坐标
-    i32 y;      // 元素左上角纵坐标
-    i32 width;  // 元素宽度
-    i32 height; // 元素高度
+  union {
+    struct {
+      i32 x;      // 元素左上角横坐标
+      i32 y;      // 元素左上角纵坐标
+      i32 width;  // 元素宽度
+      i32 height; // 元素高度
+    };
+    Position pos;
   };
   pl2d::Rect     internal;            // 元素内部的区域
   Element       *parent;              // 父元素，表示当前元素的上一级元素
@@ -41,13 +47,16 @@ struct Element : Style {
   pl2d::Context *draw_ctx = null;     // 可绘制对象，用于绘制元素的图形
   bool           receive_child_event; // 是否接收子对象的事件
   Callbacks      cb;                  // 事件处理器
-  int32_t        order;               //
   bool           mouse_hover;         //
   bool           visible;             // 是否可见
   bool           lock;                // 是否被锁定，锁定状态下无法修改属性
   bool           focus;               // 是否获得焦点
   bool           nochild;             // 是否不允许拥有子元素
+  bool           always_on_top;       // 元素总在顶部
+  bool           always_on_bottom;    // 元素总在底部
   ChildList      child;               // 子元素列表
+
+  Element() = default;
 };
 
 } // namespace plui

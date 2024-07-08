@@ -11,6 +11,10 @@ struct BaseRect {
   T x2 = 0, y2 = 0; // 右下角坐标
 
   BaseRect() = default;
+  BaseRect(T w, T h) {
+    this->x1 = 0, this->y1 = 0;
+    this->x2 = w - 1, this->y2 = h - 1;
+  }
   BaseRect(T x1, T y1, T x2, T y2) {
     cpp::exch_if(x1 > x2, x1, x2);
     cpp::exch_if(y1 > y2, y1, y2);
@@ -20,7 +24,10 @@ struct BaseRect {
   BaseRect(const BaseRect &)     = default;
   BaseRect(BaseRect &&) noexcept = default;
 
-  auto size() -> size_t {
+  auto operator=(const BaseRect &) -> BaseRect     & = default;
+  auto operator=(BaseRect &&) noexcept -> BaseRect & = default;
+
+  auto size() const -> size_t {
     return (x2 - x1 + 1) * (y2 - y1 + 1);
   }
 
@@ -32,17 +39,30 @@ struct BaseRect {
     return *this;
   }
 
-  auto topleft() -> BasePoint2<T> {
+  auto topleft() const -> BasePoint2<T> {
     return {x1, y1};
   }
-  auto topright() -> BasePoint2<T> {
-    return {x1, y2};
-  }
-  auto bottomleft() -> BasePoint2<T> {
+  auto topright() const -> BasePoint2<T> {
     return {x2, y1};
   }
-  auto bottomright() -> BasePoint2<T> {
+  auto bottomleft() const -> BasePoint2<T> {
+    return {x1, y2};
+  }
+  auto bottomright() const -> BasePoint2<T> {
     return {x2, y2};
+  }
+
+  void trunc(T w, T h) {
+    x1 = cpp::max(0, x1);
+    y1 = cpp::max(0, y1);
+    x2 = cpp::min(w - 1, x2);
+    y2 = cpp::min(h - 1, y2);
+  }
+  void trunc(BaseRect r) {
+    x1 = cpp::max(r.x1, x1);
+    y1 = cpp::max(r.y1, y1);
+    x2 = cpp::min(r.x2, x2);
+    y2 = cpp::min(r.y2, y2);
   }
 
   void contain(T x, T y) {
@@ -55,12 +75,12 @@ struct BaseRect {
     contain(p.x, p.y);
   }
 
-  auto contains(T x, T y) -> bool {
+  auto contains(T x, T y) const -> bool {
     if (x < x1 || x > x2) return false;
     if (y < y1 || y > y2) return false;
     return true;
   }
-  auto contains(const BasePoint2<T> &p) -> bool {
+  auto contains(const BasePoint2<T> &p) const -> bool {
     return contains(p.x, p.y);
   }
 

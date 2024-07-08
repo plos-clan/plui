@@ -3,3 +3,5 @@
 #pragma once
 #include "plui/element.hpp"
 #include "plui/event.hpp"
+#include "plui/pos.hpp"
+#include "plui/wnd.hpp"

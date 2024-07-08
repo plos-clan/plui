@@ -10,7 +10,8 @@ void screen_flush();
 
 namespace plds {
 
-void flush();
+auto init(void *buffer, u32 width, u32 height, PixFmt fmt = texture_pixfmt) -> int;
+void flush(bool force);
 void deinit();
 
 } // namespace plds
