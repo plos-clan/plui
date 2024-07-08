@@ -26,6 +26,10 @@ struct BaseTexture {
   auto operator=(const BaseTexture &) -> BaseTexture & = delete;
   auto operator=(BaseTexture &&) noexcept -> BaseTexture &;
 
+  void reset() {
+    *this = {};
+  }
+
   auto ready() const -> bool {
     return pixels != null;
   }
@@ -63,6 +67,7 @@ struct BaseTexture {
     return pixels[y * pitch + x];
   }
 
+  // 获取与 texture 一样大的 rect
   auto size_rect() -> Rect {
     return {0, 0, (i32)width - 1, (i32)height - 1};
   }
@@ -78,6 +83,11 @@ struct BaseTexture {
   auto get(i32 x, i32 y, T &p) -> BaseTexture &;
   auto get(i32 x, i32 y, T &p) const -> const BaseTexture &;
   auto set(i32 x, i32 y, const T &p) -> BaseTexture &;
+  auto set(i32 x, i32 y, u32 c) -> BaseTexture &;
+  auto set(i32 x, i32 y, byte r, byte g, byte b) -> BaseTexture &;
+  auto set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> BaseTexture &;
+  auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> BaseTexture &;
+  auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTexture &;
 
   //% 缩放 resize会创建新对象 resize_to不会创建新对象
   auto resize_to(float s) -> BaseTexture &;      // 缩放到 s 倍
@@ -91,6 +101,7 @@ struct BaseTexture {
   void line(i32 x1, i32 y1, i32 x2, i32 y2, const T &color);
   void line_mix(i32 x1, i32 y1, i32 x2, i32 y2, const T &color);
   // 填充区域
+  void fill(const T &color);
   void fill(RectI rect, const T &color);
   void fill_mix(RectI rect, const T &color);
   // 未实现
@@ -98,32 +109,8 @@ struct BaseTexture {
   void polygon();
 };
 
-struct TextureB : BaseTexture<PixelB> {
-  using BaseTexture<PixelB>::BaseTexture;
-
-  auto copy() -> TextureB * {
-    return (TextureB *)BaseTexture<PixelB>::copy();
-  }
-
-  using BaseTexture<PixelB>::set;
-  auto set(i32 x, i32 y, byte r, byte g, byte b) -> TextureB &;
-  auto set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> TextureB &;
-  auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> TextureB &;
-  auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> TextureB &;
-};
-
-struct TextureF : BaseTexture<PixelF> {
-  using BaseTexture<PixelF>::BaseTexture;
-
-  auto copy() -> TextureF * {
-    return (TextureF *)BaseTexture<PixelF>::copy();
-  }
-
-  using BaseTexture<PixelF>::set;
-  auto set(i32 x, i32 y, byte r, byte g, byte b) -> TextureF &;
-  auto set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> TextureF &;
-  auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> TextureF &;
-  auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> TextureF &;
-};
+using TextureB = BaseTexture<PixelB>;
+using TextureF = BaseTexture<PixelF>;
+using Texture  = TextureB;
 
 } // namespace pl2d

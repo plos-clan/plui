@@ -19,33 +19,39 @@ enum class Event : u32 {
   Scroll,     //
 };
 
-static plds::FrameBuffer fb;
-static pl2d::TextureB    tex;
-
 namespace plds {
+
+cpp::List<void *> window_list;
+
+FrameBuffer    screen_fb;
+pl2d::TextureB screen_tex;
+
+static auto &fb  = screen_fb;
+static auto &tex = screen_tex;
 
 void flush() {
   static float i  = 0;
   pl2d::PixelF p  = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
   i              += .01;
   p.LAB2RGB();
-  // printf("%f %f %f\n", p.r, p.g, p.b);
-  tex.fill(tex.size_rect(), 0xff00ffff);
+  tex.fill(tex.size_rect(), p);
   fb.flush(tex);
   screen_flush();
 }
 
-void deinit() {}
+void deinit() {
+  tex = {};
+}
 
 } // namespace plds
 
 namespace plds::on {
 
 // 屏幕大小重设
-auto screen_resize(void *buffer, u32 width, u32 height) -> int {
+auto screen_resize(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
   if (fb.ready) fb.reset();
   fb.pix[0] = buffer;
-  fb.pixfmt = plds::PixFmt::BGRA;
+  fb.pixfmt = fmt;
   fb.width  = width;
   fb.height = height;
   fb.init();

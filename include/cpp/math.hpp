@@ -4,8 +4,8 @@
 
 namespace cpp {
 
-constexpr f64 PI = 3.14159265358979323846264338327950288;
-constexpr f64 E  = 2.718281828459045235360287;
+inline constexpr f64 PI = 3.14159265358979323846264338327950288;
+inline constexpr f64 E  = 2.718281828459045235360287;
 
 // --------------------------------------------------
 //; 最大最小
@@ -131,7 +131,7 @@ static auto lcm(T a, T b) -> T {
   return a / gcd(a, b) * b;
 }
 
-#if __has_builtin(fmod)
+#if __has(fmod)
 static auto mod(f32 x, f32 y) -> f32 {
   return __builtin_fmodf(x, y);
 }
@@ -160,7 +160,7 @@ static auto cube(T x) -> T {
   return x * x * x;
 }
 
-#if __has_builtin(sqrt)
+#if __has(sqrt)
 finline auto sqrt(float x) -> float {
   return __builtin_sqrtf(x);
 }
@@ -214,7 +214,7 @@ finline auto sqrt(u64 x) -> double {
 }
 #endif
 
-#if __has_builtin(cbrt)
+#if __has(cbrt)
 finline auto cbrt(float x) -> float {
   return __builtin_cbrtf(x);
 }
@@ -249,7 +249,7 @@ static auto cbrt(double x) -> double {
 // --------------------------------------------------
 //; 对数 指数
 
-#if __has_builtin(exp2)
+#if __has(exp2)
 static auto exp2(f32 x) -> f32 {
   return __builtin_exp2f(x);
 }
@@ -279,7 +279,7 @@ static auto exp2(f64 x) -> f64 {
 }
 #endif
 
-#if __has_builtin(exp)
+#if __has(exp)
 static auto exp(f32 x) -> f32 {
   return __builtin_expf(x);
 }
@@ -291,7 +291,7 @@ static auto exp(f32 x) -> f32 {}
 static auto exp(f64 x) -> f64 {}
 #endif
 
-#if __has_builtin(log2)
+#if __has(log2)
 static auto log2(f32 x) -> f32 {
   return __builtin_log2f(x);
 }
@@ -373,7 +373,7 @@ static auto pow(i64 a, u64 b) -> i64 {
   return r;
 }
 
-#if __has_builtin(pow)
+#if __has(pow)
 static auto pow(f32 a, f32 b) -> f32 {
   return __builtin_powf(a, b);
 }
@@ -398,7 +398,7 @@ static auto pow(f64 a, f64 b) -> f64 {
 // --------------------------------------------------
 //; 三角函数
 
-#if __has_builtin(sin)
+#if __has(sin)
 static auto sin(f32 x) -> f32 {
   return __builtin_sinf(x);
 }
@@ -409,7 +409,7 @@ static auto sin(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(cos)
+#if __has(cos)
 static auto cos(f32 x) -> f32 {
   return __builtin_cosf(x);
 }
@@ -420,7 +420,7 @@ static auto cos(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(tan)
+#if __has(tan)
 static auto tan(f32 x) -> f32 {
   return __builtin_tanf(x);
 }
@@ -431,7 +431,7 @@ static auto tan(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(asin)
+#if __has(asin)
 static auto asin(f32 x) -> f32 {
   return __builtin_asinf(x);
 }
@@ -442,7 +442,7 @@ static auto asin(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(acos)
+#if __has(acos)
 static auto acos(f32 x) -> f32 {
   return __builtin_acosf(x);
 }
@@ -453,7 +453,7 @@ static auto acos(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(atan)
+#if __has(atan)
 static auto atan(f32 x) -> f32 {
   return __builtin_atanf(x);
 }
@@ -464,7 +464,7 @@ static auto atan(f64 x) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-#if __has_builtin(atan2)
+#if __has(atan2)
 static auto atan(f32 x, f32 y) -> f32 {
   return __builtin_atan2f(x, y);
 }
@@ -475,7 +475,7 @@ static auto atan2(f64 x, f64 y) -> f64 {
 #  error "函数未实现，去催开发者"
 #endif
 
-// #if __has_builtin(abs)
+// #if __has(abs)
 // #else
 // #endif
 

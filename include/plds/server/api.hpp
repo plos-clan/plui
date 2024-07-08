@@ -1,5 +1,6 @@
 #pragma once
 #include <define.h>
+#include <plds/base.hpp>
 #include <type.hpp>
 
 extern "C" {
@@ -245,7 +246,7 @@ enum {
 namespace plds::on {
 
 // 屏幕大小重设
-auto screen_resize(void *buffer, u32 width, u32 height) -> int;
+auto screen_resize(void *buffer, u32 width, u32 height, PixFmt fmt = texture_pixfmt) -> int;
 // 鼠标移动
 void mouse_move(i32 x, i32 y);
 // 鼠标按键按下

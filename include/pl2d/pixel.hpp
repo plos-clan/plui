@@ -6,6 +6,8 @@
 
 namespace pl2d {
 
+constexpr auto version = 0;
+
 namespace color {
 enum EFmtConv {
   U8,

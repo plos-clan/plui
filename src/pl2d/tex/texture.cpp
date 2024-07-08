@@ -147,55 +147,37 @@ auto BaseTexture<T>::set(i32 x, i32 y, const T &p) -> BaseTexture & {
   return *this;
 }
 
+template <typename T>
+auto BaseTexture<T>::set(i32 x, i32 y, u32 c) -> BaseTexture & {
+  pixels[y * pitch + x] = c;
+  return *this;
+}
+
+template <typename T>
+auto BaseTexture<T>::set(i32 x, i32 y, byte r, byte g, byte b) -> BaseTexture & {
+  pixels[y * pitch + x] = PixelB{r, g, b};
+  return *this;
+}
+
+template <typename T>
+auto BaseTexture<T>::set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> BaseTexture & {
+  pixels[y * pitch + x] = PixelB{r, g, b, a};
+  return *this;
+}
+
+template <typename T>
+auto BaseTexture<T>::set(i32 x, i32 y, f32 r, f32 g, f32 b) -> BaseTexture & {
+  pixels[y * pitch + x] = PixelF{r, g, b};
+  return *this;
+}
+
+template <typename T>
+auto BaseTexture<T>::set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTexture & {
+  pixels[y * pitch + x] = PixelF{r, g, b, a};
+  return *this;
+}
+
 template class BaseTexture<PixelB>;
 template class BaseTexture<PixelF>;
-
-//* ----------------------------------------------------------------------------------------------------
-//; TextureB
-//* ----------------------------------------------------------------------------------------------------
-
-auto TextureB::set(i32 x, i32 y, byte r, byte g, byte b) -> TextureB & {
-  pixels[y * pitch + x] = {r, g, b, 255};
-  return *this;
-}
-
-auto TextureB::set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> TextureB & {
-  pixels[y * pitch + x] = {r, g, b, a};
-  return *this;
-}
-
-auto TextureB::set(i32 x, i32 y, f32 r, f32 g, f32 b) -> TextureB & {
-  pixels[y * pitch + x] = PixelF{r, g, b, 1}.to_u8();
-  return *this;
-}
-
-auto TextureB::set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> TextureB & {
-  pixels[y * pitch + x] = PixelF{r, g, b, a}.to_u8();
-  return *this;
-}
-
-//* ----------------------------------------------------------------------------------------------------
-//; TextureF
-//* ----------------------------------------------------------------------------------------------------
-
-auto TextureF::set(i32 x, i32 y, byte r, byte g, byte b) -> TextureF & {
-  pixels[y * pitch + x] = PixelB{r, g, b, 255}.to_f32();
-  return *this;
-}
-
-auto TextureF::set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> TextureF & {
-  pixels[y * pitch + x] = PixelB{r, g, b, a}.to_f32();
-  return *this;
-}
-
-auto TextureF::set(i32 x, i32 y, f32 r, f32 g, f32 b) -> TextureF & {
-  pixels[y * pitch + x] = {r, g, b, 1};
-  return *this;
-}
-
-auto TextureF::set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> TextureF & {
-  pixels[y * pitch + x] = {r, g, b, a};
-  return *this;
-}
 
 } // namespace pl2d

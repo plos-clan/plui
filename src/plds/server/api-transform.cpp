@@ -1,3 +1,4 @@
+#include "plds/base/fb.h"
 #include <plds.hpp>
 #include <plds/server/api.h>
 
@@ -7,8 +8,8 @@ dlexport void plds_flush() {
 dlexport void plds_deinit() {
   plds::deinit();
 }
-dlexport int plds_on_screen_resize(void *buffer, u32 width, u32 height) {
-  return plds::on::screen_resize(buffer, width, height);
+dlexport auto plds_on_screen_resize(void *buffer, u32 width, u32 height, plds_PixFmt fmt) -> int {
+  return plds::on::screen_resize(buffer, width, height, (plds::PixFmt)fmt);
 }
 dlexport void plds_on_mouse_move(i32 x, i32 y) {
   plds::on::mouse_move(x, y);

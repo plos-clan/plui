@@ -7,11 +7,11 @@
 // char tolower(char c);
 // char toupper(char c);
 
-#  if __has_builtin(cbrt)
+#  if __has(cbrt)
 #  else
 #  endif
 
-#  if __has_builtin(memcpy)
+#  if __has(memcpy)
 finline void *memcpy(void *_rest _d, const void *_rest _s, size_t _n) {
   return __builtin_memcpy(_d, _s, _n);
 }
@@ -19,7 +19,7 @@ finline void *memcpy(void *_rest _d, const void *_rest _s, size_t _n) {
 dlimport void *memcpy(void *_rest _d, const void *_rest _s, size_t _n);
 #  endif
 
-#  if __has_builtin(memmove)
+#  if __has(memmove)
 finline void *memmove(void *_d, const void *_s, size_t _n) {
   return __builtin_memmove(_d, _s, _n);
 }
@@ -27,7 +27,7 @@ finline void *memmove(void *_d, const void *_s, size_t _n) {
 dlimport void *memmove(void *_d, const void *_s, size_t _n);
 #  endif
 
-#  if __has_builtin(memset)
+#  if __has(memset)
 finline void *memset(void *_s, int _c, size_t _n) {
   return __builtin_memset(_s, _c, _n);
 }

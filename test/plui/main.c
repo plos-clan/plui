@@ -1,3 +1,4 @@
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -21,6 +22,7 @@
 #include <config.h>
 #undef NO_STD
 #define NO_STD 0
+#include "plds/base/fb.h"
 #include <define.h>
 #include <osapi.h>
 #include <plds/server/api.h>
@@ -141,7 +143,7 @@ int loop_body(XEvent e) {
       screen_width  = e.xconfigure.width;
       screen_height = e.xconfigure.height;
       recreate_img(screen_width, screen_height);
-      plds_on_screen_resize(image->data, screen_width, screen_height);
+      plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
       plds_flush();
     }
   }
@@ -156,7 +158,7 @@ quit:
 int main() {
   init_xlib(1280, 720);
 
-  int ret = plds_on_screen_resize(image->data, screen_width, screen_height);
+  int ret = plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
   if (ret < 0) return -ret;
 
   XEvent event;

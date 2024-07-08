@@ -1,5 +1,6 @@
 #pragma once
 #include <define.h>
+#include <plds/base/fb.h>
 #include <type.h>
 
 #ifdef __cplusplus
@@ -16,7 +17,7 @@ void screen_flush();
 void plds_flush();
 void plds_deinit();
 // 屏幕大小重设
-int  plds_on_screen_resize(void *buffer, u32 width, u32 height);
+int  plds_on_screen_resize(void *buffer, u32 width, u32 height, plds_PixFmt fmt);
 // 鼠标移动
 void plds_on_mouse_move(i32 x, i32 y);
 // 鼠标按键按下

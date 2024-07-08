@@ -17,6 +17,8 @@
 #define __wur             __attribute__((warn_unused_result))
 #define __nonnull(params) __attribute__((nonnull params))
 
+// __attribute__((overloadable)) 是 clang 扩展，使 C 函数可以被重载
+
 #ifdef __cplusplus
 #  define overload
 #  define dlexport    __attribute__((visibility("default")))
@@ -41,7 +43,16 @@
 #else
 #  define finline static inline __attribute__((always_inline))
 #endif
-#define lengthof(arr) (sizeof(arr) / sizeof(*arr))
+
+// 获取数组的长度
+#ifndef lengthof
+#  define lengthof(arr) (sizeof(arr) / sizeof(*arr))
+#endif
+
+// 获取表达式的类型，类似于 auto
+#define typeof(arg) __typeof__((void)0, arg)
+
+#define __has(name) (__has_builtin(__builtin_##name))
 
 #define CONCAT_(a, b) a##b
 #define CONCAT(a, b)  CONCAT_(a, b)
