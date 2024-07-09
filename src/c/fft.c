@@ -154,6 +154,7 @@ complex *fft_r2c(double *s, size_t l) {
 
   return x;
 }
+
 double *fft_c2r(complex *s, size_t l) {
   if (!fft_inited) fft_init();
 

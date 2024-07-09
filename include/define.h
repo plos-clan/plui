@@ -52,7 +52,11 @@
 // 获取表达式的类型，类似于 auto
 #define typeof(arg) __typeof__((void)0, arg)
 
-#define __has(name) (__has_builtin(__builtin_##name))
+#if NO_BUILTIN
+#  define __has(name) (0)
+#else
+#  define __has(name) (__has_builtin(__builtin_##name))
+#endif
 
 #define CONCAT_(a, b) a##b
 #define CONCAT(a, b)  CONCAT_(a, b)

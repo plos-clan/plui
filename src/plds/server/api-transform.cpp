@@ -5,8 +5,8 @@
 dlexport auto plds_init(void *buffer, u32 width, u32 height, plds_PixFmt fmt) -> int {
   return plds::init(buffer, width, height, (plds::PixFmt)fmt);
 }
-dlexport void plds_flush(bool force) {
-  plds::flush(force);
+dlexport void plds_flush() {
+  plds::flush();
 }
 dlexport void plds_deinit() {
   plds::deinit();

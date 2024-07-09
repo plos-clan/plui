@@ -80,6 +80,8 @@ static void init_xlib(u32 width, u32 height) {
   XMapWindow(display, window);
   XFlush(display);
 
+  XSynchronize(display, True);
+
   wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", false);
 
   { // 隐藏鼠标指针
@@ -103,14 +105,10 @@ void screen_flush() {
   // static u64 old_time = 0;
   // u64        time     = monotonic_us();
   // printf("%lf\n", 1e6 / (time - old_time));
-  // i64        delay = (1e6 / 60) - (time - old_time);
-  // if (delay > 0) usleep(delay);
   // old_time = time;
 }
 
 int loop_body(XEvent e, int pending) {
-  if (pending == 0) plds_flush(false);
-
   if (e.type == ClientMessage) {
     if (e.xclient.message_type == wmDeleteMessage) goto quit;
   }
@@ -147,9 +145,11 @@ int loop_body(XEvent e, int pending) {
       screen_height = e.xconfigure.height;
       recreate_img(screen_width, screen_height);
       plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
-      plds_flush(true);
     }
   }
+
+  // 如果是当前帧处理的最后一个事件，就发送 flush
+  if (pending == 0) plds_flush();
 
   return 0;
 
@@ -167,18 +167,9 @@ int main() {
   XEvent event;
   while (!exit_flag) {
     XNextEvent(display, &event);
-    int pending = XPending(display);
 
-    ret = loop_body(event, pending);
+    ret = loop_body(event, XPending(display));
     if (ret) break;
-
-    if (pending == 0) {
-      static u64 old_time = 0;
-      u64        time     = monotonic_us();
-      i64        delay    = (1e6 / 60) - (time - old_time);
-      old_time            = time;
-      if (delay > 0) usleep(delay);
-    }
   }
 
   destroy_img();

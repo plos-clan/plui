@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -14,8 +14,8 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # set(CMAKE_C_FLAGS "-std=gnu2x -flto -Ofast -march=native")
 # set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -Ofast -march=native")
-set(CMAKE_C_FLAGS "-std=gnu2x -flto -Og -march=native")
-set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -Og -march=native")
+set(CMAKE_C_FLAGS "-std=gnu2x -flto -Og")
+set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -Og")
 
 include(cmake/gtest)
 include(cmake/show-flags) 

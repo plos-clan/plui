@@ -37,13 +37,13 @@ auto BaseTexture<T>::paste_from_mix(const BaseTexture<T> &tex, i32 dx, i32 dy) -
 
 template <typename T>
 auto BaseTexture<T>::paste_to_mix(BaseTexture &tex, i32 x, i32 y) -> BaseTexture & {
-  tex.paste_from(*this, x, y);
+  tex.paste_from_mix(*this, x, y);
   return *this;
 }
 
 template <typename T>
 auto BaseTexture<T>::paste_to_mix(BaseTexture &tex, i32 x, i32 y) const -> const BaseTexture & {
-  tex.paste_from(*this, x, y);
+  tex.paste_from_mix(*this, x, y);
   return *this;
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <cpp.hpp>
 #include <define.h>
 #include <type.hpp>
 
@@ -94,6 +95,10 @@ struct BasePixel {
 
   operator u32();
 
+  auto operator==(const BasePixel &p) const -> bool {
+    return r == p.r && g == p.g && b == p.b && a == p.a;
+  }
+
   auto operator[](size_t n) const -> T {
     return d[n];
   }
@@ -109,10 +114,22 @@ struct BasePixel {
     return mix(*this, s);
   }
 
+  auto diff(const BasePixel &p) -> T {
+    T dr = cpp::diff(r, p.r);
+    T dg = cpp::diff(g, p.g);
+    T db = cpp::diff(b, p.b);
+    return cpp::max(dr, dg, db);
+  }
+
+  void        mix_ratio(const BasePixel &s, T r);
+  static auto mix_ratio(const BasePixel &c1, const BasePixel &c2, T r) -> BasePixel;
+  void        mix_opaque(const BasePixel &s);
+  static auto mix_opaque(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
   void        mix(const BasePixel &s);
   static auto mix(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
 
-  auto grayscale() const -> BasePixel;
+  auto brightness() const -> T;        // 亮度
+  auto grayscale() const -> BasePixel; // 也是亮度，但填充成完整的 rgba
   auto gamma_correct() const -> BasePixel;
   auto reverse_gamma() const -> BasePixel;
 

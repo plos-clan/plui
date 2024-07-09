@@ -98,21 +98,26 @@ struct BaseTexture {
   //% 纹理内置的简单绘图函数
 
   // 绘制线条
-  void line(i32 x1, i32 y1, i32 x2, i32 y2, const T &color);
-  void line_mix(i32 x1, i32 y1, i32 x2, i32 y2, const T &color);
+  auto line(i32 x1, i32 y1, i32 x2, i32 y2, const T &color) -> BaseTexture &;
+  auto line_mix(i32 x1, i32 y1, i32 x2, i32 y2, const T &color) -> BaseTexture &;
   // 填充区域
-  void fill(const T &color);
-  void fill(RectI rect, const T &color);
-  void fill_mix(RectI rect, const T &color);
-  // 未实现
-  void trangle();
-  void polygon();
+  auto fill(const T &color) -> BaseTexture &;
+  auto fill(RectI rect, const T &color) -> BaseTexture &;
+  auto fill_mix(RectI rect, const T &color) -> BaseTexture &;
+  // 绘制图片
   auto paste_from(const BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
   auto paste_to(BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
   auto paste_to(BaseTexture &tex, i32 x, i32 y) const -> const BaseTexture &;
   auto paste_from_mix(const BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
   auto paste_to_mix(BaseTexture &tex, i32 x, i32 y) -> BaseTexture &;
   auto paste_to_mix(BaseTexture &tex, i32 x, i32 y) const -> const BaseTexture &;
+  // 转换颜色
+  auto replace(const T &src, const T dst) -> BaseTexture &;
+  auto transform(void (*cb)(T &pix)) -> BaseTexture &;
+  auto transform(void (*cb)(T &pix, i32 x, i32 y)) -> BaseTexture &;
+  // 未实现
+  void trangle();
+  void polygon();
 };
 
 using TextureB = BaseTexture<PixelB>;

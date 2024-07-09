@@ -108,7 +108,11 @@ struct FrameBuffer {
   bool   ready   = false;          //
   void (*cb_flushed)();            //
 
-  FrameBuffer()                        = default;
+  FrameBuffer() = default;
+  FrameBuffer(void *data, u32 width, u32 height, PixFmt pixfmt)
+      : pix(data, null, null, null), width(width), height(height), pixfmt(pixfmt) {
+    init();
+  }
   FrameBuffer(const FrameBuffer &)     = delete;
   FrameBuffer(FrameBuffer &&) noexcept = default;
 

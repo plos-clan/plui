@@ -39,8 +39,6 @@ namespace plds {
 FrameBuffer    screen_fb;
 pl2d::TextureB screen_tex;
 
-// pl2d::TextureB img_tex;
-
 pl2d::TextureB frame_tex[19];
 
 static auto &fb  = screen_fb;
@@ -50,19 +48,18 @@ auto load_qoi_to_tex(const char *filename, pl2d::TextureB &tex) {
   int   img_width, img_height, img_channels;
   void *data = qoi_load(filename, &img_width, &img_height, &img_channels);
   if (data == null) abort();
-  FrameBuffer img_fb;
-  img_fb.width  = img_width;
-  img_fb.height = img_height;
-  img_fb.pixfmt = img_channels == 3 ? plds::PixFmt::RGB : plds::PixFmt::RGBA;
-  img_fb.pix[0] = data;
-  img_fb.init();
+  FrameBuffer img_fb(data, img_width, img_height, img_channels == 3 ? PixFmt::RGB : PixFmt::RGBA);
   img_fb.init_texture(tex);
   img_fb.copy_to(tex);
+  free(data);
 }
 
 auto init(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
   for (int i = 0; i < 18; i++) {
     load_qoi_to_tex(("frame" + std::to_string(i) + ".qoi").c_str(), frame_tex[i]);
+    frame_tex[i].transform([](pl2d::PixelB &pix) {
+      if (pix.brightness() > 240) pix = 0;
+    });
   }
 
   return on::screen_resize(buffer, width, height, fmt);
@@ -70,15 +67,14 @@ auto init(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
 
 int nframe = 0;
 
-void flush(bool force) {
-  if (!force) nframe++;
+void flush() {
+  nframe++;
 
   float        i = (f32)nframe * .01f;
   pl2d::PixelF p = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
   p.LAB2RGB();
   tex.fill(tex.size_rect(), p);
-  // img_tex.paste_to(tex, 20, 20);
-  frame_tex[nframe / 60 % 19].paste_to(tex, 20, 20);
+  frame_tex[nframe / 60 % 19].paste_to_mix(tex, 20, 20);
   fb.flush(tex);
   screen_flush();
 }

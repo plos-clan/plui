@@ -5,9 +5,22 @@
 // --------------------------------------------------
 //; clz
 
-#if !__has(clz)
+#ifndef __cplusplus
+#  define F32_EPSILON 1e-5f
+#  define F64_EPSILON 1e-10
+#endif
+
+#if __has(clz)
+#  define clz(x)                                                                                   \
+    _Generic((x),                                                                                  \
+        unsigned char: __builtin_clzs((ushort)(x)) - 8,                                            \
+        unsigned short: __builtin_clzs(x),                                                         \
+        unsigned int: __builtin_clz(x),                                                            \
+        unsigned long: __builtin_clzl(x),                                                          \
+        unsigned long long: __builtin_clzll(x))
+#else
 #  define __(TYPE, NAME)                                                                           \
-    int __builtin_##NAME(TYPE x) {                                                                 \
+    static int _##NAME(TYPE x) {                                                                   \
       int  count = 0;                                                                              \
       TYPE mask  = (TYPE)1 << (sizeof(TYPE) - 1);                                                  \
       for (; mask && (x & mask) == 0; count++, mask = mask >> 1) {}                                \
@@ -18,14 +31,14 @@ __(uint, clz)
 __(ulong, clzl)
 __(ullong, clzll)
 #  undef __
+#  define clz(x)                                                                                   \
+    _Generic((x),                                                                                  \
+        unsigned char: _clzs((ushort)(x)) - 8,                                                     \
+        unsigned short: _clzs(x),                                                                  \
+        unsigned int: _clz(x),                                                                     \
+        unsigned long: _clzl(x),                                                                   \
+        unsigned long long: _clzll(x))
 #endif
-#define clz(x)                                                                                     \
-  _Generic((x),                                                                                    \
-      unsigned char: __builtin_clzs((ushort)(x)) - 8,                                              \
-      unsigned short: __builtin_clzs(x),                                                           \
-      unsigned int: __builtin_clz(x),                                                              \
-      unsigned long: __builtin_clzl(x),                                                            \
-      unsigned long long: __builtin_clzll(x))
 
 // --------------------------------------------------
 //; bit_reverse

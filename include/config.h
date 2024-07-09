@@ -4,6 +4,8 @@
 // 没有标准库你也需要提供一部分函数
 #define NO_STD 1
 
+#define NO_BUILTIN 0
+
 // 忽略非法的参数
 #define STD_SAFE_API 1 // 调用标准库函数时检查参数
 #define SAFE_API     1 // 调用本库的函数时检查参数

@@ -15,7 +15,7 @@ void screen_flush();
 // plds 提供的 API
 
 int  plds_init(void *buffer, u32 width, u32 height, plds_PixFmt fmt);
-void plds_flush(bool force); // 强制刷新或 60fps 信号
+void plds_flush(); // 60fps 信号
 void plds_deinit();
 // 屏幕大小重设
 int  plds_on_screen_resize(void *buffer, u32 width, u32 height, plds_PixFmt fmt);

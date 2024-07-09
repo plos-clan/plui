@@ -8,11 +8,12 @@
 namespace plui {
 
 struct Style {
+
   u32         border_width; // 边框宽度
   pl2d::Pixel border_color; // 边框颜色
 
-  u32 bg_color; // 背景色
-  u32 fg_color; // 前景色
+  pl2d::Pixel bg_color = 0xffffffff; // 背景色
+  pl2d::Pixel fg_color = 0x000000ff; // 前景色
 
   pl2d::Texture *bg_img; // 背景图像
 

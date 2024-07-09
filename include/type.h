@@ -153,6 +153,19 @@ typedef _Complex float           cfloat32_t;
 typedef _Complex double          cfloat64_t;
 typedef _Complex __float128      cfloat128_t;
 
+typedef cint8_t     ci8;
+typedef cuint8_t    cu8;
+typedef cint16_t    ci16;
+typedef cuint16_t   cu16;
+typedef cint32_t    ci32;
+typedef cuint32_t   cu32;
+typedef cint64_t    ci64;
+typedef cuint64_t   cu64;
+typedef cfloat16_t  cf16;
+typedef cfloat32_t  cf32;
+typedef cfloat64_t  cf64;
+typedef cfloat128_t cf128;
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~ 标准库原子操作部分
 
