@@ -1,11 +1,11 @@
 #pragma once
+#include "texture.hpp"
 #include <c.h>
 #include <cpp.hpp>
 #include <define.h>
-#include <pl2d.hpp>
 #include <type.hpp>
 
-namespace plds {
+namespace pl2d {
 
 enum class PixFmt : u32 {
   BlackWhite, // 黑白双色
@@ -146,4 +146,4 @@ struct FrameBuffer {
   auto new_texture_f() -> pl2d::TextureF *;
 };
 
-} // namespace plds
+} // namespace pl2d

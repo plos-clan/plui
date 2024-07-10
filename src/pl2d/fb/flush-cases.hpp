@@ -1,7 +1,7 @@
 #pragma once
 #include "private.hpp"
 
-namespace plds {
+namespace pl2d {
 
 #define RUN                                                                                        \
   do {                                                                                             \
@@ -66,4 +66,4 @@ auto FrameBuffer::copy_to(pl2d::TextureF &tex) const -> int {
   return copy_to(tex, rect);
 }
 
-} // namespace plds
+} // namespace pl2d

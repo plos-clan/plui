@@ -1,6 +1,6 @@
 #pragma once
 #include <define.h>
-#include <plds/base/fb.h>
+#include <pl2d/fb.h>
 #include <type.h>
 
 #ifdef __cplusplus
@@ -14,11 +14,11 @@ void screen_flush();
 
 // plds 提供的 API
 
-int  plds_init(void *buffer, u32 width, u32 height, plds_PixFmt fmt);
+int  plds_init(void *buffer, u32 width, u32 height, pl2d_PixFmt fmt);
 void plds_flush(); // 60fps 信号
 void plds_deinit();
 // 屏幕大小重设
-int  plds_on_screen_resize(void *buffer, u32 width, u32 height, plds_PixFmt fmt);
+int  plds_on_screen_resize(void *buffer, u32 width, u32 height, pl2d_PixFmt fmt);
 // 鼠标移动
 void plds_on_mouse_move(i32 x, i32 y);
 // 鼠标按键按下

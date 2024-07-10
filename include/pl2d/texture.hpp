@@ -5,15 +5,18 @@
 
 namespace pl2d {
 
+// 所有返回 BaseTexture & 的函数返回的都是结构体自身
+// 可以用来实现链式调用
+
 template <typename T>
 struct BaseTexture {
-  T   *pixels       = null;  // 储存实际分配的大小 像素数而不是字节数
+  T   *pixels       = null;  //
   bool own_pixels   = false; // pixels 是否为该结构体所有
   u32  width        = 0;     // 宽度
   u32  height       = 0;     // 高度
   u32  pitch        = 0;     // 每行实际的像素数
   u32  size         = 0;     // 储存 height * pitch 而不是占用的字节数
-  u32  alloced_size = 0;     // 实际分配的内存 pixels数
+  u32  alloced_size = 0;     // 储存实际分配的大小 像素数而不是字节数
 
   BaseTexture() = default;
   BaseTexture(u32 width, u32 height);
@@ -21,12 +24,12 @@ struct BaseTexture {
   BaseTexture(T *pixels, u32 width, u32 height);
   BaseTexture(T *pixels, u32 width, u32 height, u32 pitch);
   BaseTexture(const BaseTexture &) = delete; // 隐式地复制是不允许的
-  BaseTexture(BaseTexture &&) noexcept;
+  BaseTexture(BaseTexture &&) noexcept;      // 移动是可以的
   ~BaseTexture();
   auto operator=(const BaseTexture &) -> BaseTexture & = delete; // 隐式地复制是不允许的
-  auto operator=(BaseTexture &&) noexcept -> BaseTexture &;
+  auto operator=(BaseTexture &&) noexcept -> BaseTexture &;      // 移动是可以的
 
-  auto reset() -> BaseTexture &;
+  auto reset() -> BaseTexture &; // 重置 texture 为未初始化状态
 
   auto ready() const -> bool {
     return pixels != null;
@@ -83,6 +86,7 @@ struct BaseTexture {
     return {0, 0, (i32)width - 1, (i32)height - 1};
   }
 
+  // 拷贝到另一个 texture，从另一个 texture 拷贝
   auto copy() -> BaseTexture *;
   template <typename T2>
   auto copy_to(BaseTexture<T2> &d) const -> bool {
@@ -93,6 +97,7 @@ struct BaseTexture {
 
   auto clear() -> BaseTexture &;
 
+  // 获取、设置值
   auto get(i32 x, i32 y) -> T &;
   auto get(i32 x, i32 y) const -> const T &;
   auto get(i32 x, i32 y, T &p) -> BaseTexture &;
@@ -104,8 +109,8 @@ struct BaseTexture {
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> BaseTexture &;
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTexture &;
 
-  auto fft() -> BaseTexture &;
-  auto ift() -> BaseTexture &;
+  auto fft() -> BaseTexture &; // 对图像进行快速傅里叶变换
+  auto ift() -> BaseTexture &; // 对图像进行快速逆傅里叶变换
 
   //% 缩放 resize会创建新对象 resize_to不会创建新对象
   auto resize_to(float s) -> BaseTexture &;      // 缩放到 s 倍
@@ -132,7 +137,9 @@ struct BaseTexture {
   // 转换颜色
   auto replace(const T &src, const T dst) -> BaseTexture &;
   auto transform(void (*cb)(T &pix)) -> BaseTexture &;
+  auto transform(void (*cb)(BaseTexture &t, T &pix)) -> BaseTexture &;
   auto transform(void (*cb)(T &pix, i32 x, i32 y)) -> BaseTexture &;
+  auto transform(void (*cb)(BaseTexture &t, T &pix, i32 x, i32 y)) -> BaseTexture &;
   // 未实现
   void trangle();
   void polygon();

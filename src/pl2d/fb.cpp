@@ -1,9 +1,9 @@
-#include <plds/base.hpp>
+#include <pl2d.hpp>
 
 #include "fb.hpp"
-using namespace plds::framebuffer;
+using namespace pl2d::framebuffer;
 
-namespace plds {
+namespace pl2d {
 
 auto FrameBuffer::init() -> int {
   if (ready) return 0;
@@ -145,4 +145,4 @@ auto FrameBuffer::new_texture_f() -> pl2d::TextureF * {
   return new pl2d::TextureF(width, height);
 }
 
-} // namespace plds
+} // namespace pl2d

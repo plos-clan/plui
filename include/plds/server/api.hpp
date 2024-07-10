@@ -1,5 +1,6 @@
 #pragma once
 #include <define.h>
+#include <pl2d.hpp>
 #include <plds/base.hpp>
 #include <type.hpp>
 
@@ -10,7 +11,7 @@ void screen_flush();
 
 namespace plds {
 
-auto init(void *buffer, u32 width, u32 height, PixFmt fmt = texture_pixfmt) -> int;
+auto init(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt = pl2d::texture_pixfmt) -> int;
 void flush();
 void deinit();
 
@@ -247,7 +248,8 @@ enum {
 namespace plds::on {
 
 // 屏幕大小重设
-auto screen_resize(void *buffer, u32 width, u32 height, PixFmt fmt = texture_pixfmt) -> int;
+auto screen_resize(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt = pl2d::texture_pixfmt)
+    -> int;
 // 鼠标移动
 void mouse_move(i32 x, i32 y);
 // 鼠标按键按下

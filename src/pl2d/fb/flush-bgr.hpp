@@ -1,7 +1,7 @@
 #pragma once
 #include "private.hpp"
 
-namespace plds::framebuffer {
+namespace pl2d::framebuffer {
 
 template <>
 void fb_flush_pix<PixFmt::BGR>(FrameBuffer &fb, const pl2d::TextureB &tex, u32 x, u32 y) {
@@ -112,4 +112,4 @@ void fb_copy_to_pix<PixFmt::ABGR>(const FrameBuffer &fb, pl2d::TextureF &tex, u3
   tex_p->r    = fb_p[3] / 255.f;
 }
 
-} // namespace plds::framebuffer
+} // namespace pl2d::framebuffer

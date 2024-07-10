@@ -22,9 +22,9 @@
 #include <config.h>
 #undef NO_STD
 #define NO_STD 0
-#include "plds/base/fb.h"
 #include <define.h>
 #include <osapi.h>
+#include <pl2d/fb.h>
 #include <plds/server/api.h>
 #include <type.h>
 
@@ -150,7 +150,7 @@ int loop_body(XEvent e, int pending) {
       screen_width  = e.xconfigure.width;
       screen_height = e.xconfigure.height;
       recreate_img(screen_width, screen_height);
-      plds_on_screen_resize(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
+      plds_on_screen_resize(image->data, screen_width, screen_height, pl2d_PixFmt_BGRA);
     }
   }
 
@@ -167,7 +167,7 @@ quit:
 int main() {
   init_xlib(1280, 720);
 
-  int ret = plds_init(image->data, screen_width, screen_height, plds_PixFmt_BGRA);
+  int ret = plds_init(image->data, screen_width, screen_height, pl2d_PixFmt_BGRA);
   if (ret < 0) return -ret;
 
   XEvent event;

@@ -14,8 +14,8 @@ extern "C" {
 void abort();
 }
 
-#include "plds/base/fb.hpp"
 #include "qoi.h"
+#include <pl2d/fb.h>
 
 extern "C" {
 void next_event();
@@ -36,8 +36,8 @@ namespace plds {
 
 // plui::Element root;
 
-FrameBuffer    screen_fb;
-pl2d::TextureB screen_tex;
+pl2d::FrameBuffer screen_fb;
+pl2d::TextureB    screen_tex;
 
 pl2d::TextureB image_tex;
 pl2d::TextureB frame_tex[19];
@@ -49,13 +49,14 @@ auto load_qoi_to_tex(const char *filename, pl2d::TextureB &tex) {
   int   img_width, img_height, img_channels;
   void *data = qoi_load(filename, &img_width, &img_height, &img_channels);
   if (data == null) abort();
-  FrameBuffer img_fb(data, img_width, img_height, img_channels == 3 ? PixFmt::RGB : PixFmt::RGBA);
+  pl2d::FrameBuffer img_fb(data, img_width, img_height,
+                           img_channels == 3 ? pl2d::PixFmt::RGB : pl2d::PixFmt::RGBA);
   img_fb.init_texture(tex);
   img_fb.copy_to(tex);
   free(data);
 }
 
-auto init(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
+auto init(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt) -> int {
   for (int i = 0; i < 18; i++) {
     load_qoi_to_tex(("frame" + std::to_string(i) + ".qoi").c_str(), frame_tex[i]);
     frame_tex[i].transform([](pl2d::PixelB &pix) {
@@ -100,7 +101,7 @@ void deinit() {
 namespace plds::on {
 
 // 屏幕大小重设
-auto screen_resize(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
+auto screen_resize(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt) -> int {
   if (fb.ready) fb.reset();
   fb.pix[0] = buffer;
   fb.pixfmt = fmt;
