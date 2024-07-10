@@ -7,20 +7,20 @@ namespace pl2d {
 
 // 假如源和目标都没有透明度
 template <BasePixelTemplate>
-void BasePixelT::mix_ratio(const BasePixelT &s, T r) {
-  T2 sw = r;
-  T2 dw = T_MAX - r;
+void BasePixelT::mix_ratio(const BasePixelT &s, T k) {
+  T2 sw = k;
+  T2 dw = T_MAX - k;
   r     = (r * dw + s.r * sw) / T_MAX;
   g     = (g * dw + s.g * sw) / T_MAX;
   b     = (b * dw + s.b * sw) / T_MAX;
-  b     = (a * dw + s.a * sw) / T_MAX;
+  a     = (a * dw + s.a * sw) / T_MAX;
 }
 
 // 假如源和目标都没有透明度
 template <BasePixelTemplate>
-auto BasePixelT::mix_ratio(const BasePixelT &c1, const BasePixelT &c2, T r) -> BasePixelT {
-  T2 w1 = r;
-  T2 w2 = T_MAX - r;
+auto BasePixelT::mix_ratio(const BasePixelT &c1, const BasePixelT &c2, T k) -> BasePixelT {
+  T2 w1 = k;
+  T2 w2 = T_MAX - k;
   return BasePixelT{
       (T)((c1.r * w1 + c2.r * w2) / T_MAX),
       (T)((c1.g * w1 + c2.g * w2) / T_MAX),

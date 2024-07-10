@@ -10,7 +10,7 @@ namespace pl2d {
 template <typename T>
 auto BaseTexture<T>::replace(const T &src, const T dst) -> BaseTexture & {
   for (const auto [x, y] : size_rect()) {
-    if (at(x, y) == src) at(x, y) = dst;
+    if ((*this)(x, y) == src) (*this)(x, y) = dst;
   }
   return *this;
 }
@@ -18,7 +18,7 @@ auto BaseTexture<T>::replace(const T &src, const T dst) -> BaseTexture & {
 template <typename T>
 auto BaseTexture<T>::transform(void (*cb)(T &pix)) -> BaseTexture & {
   for (const auto [x, y] : size_rect()) {
-    cb(at(x, y));
+    cb((*this)(x, y));
   }
   return *this;
 }
@@ -26,7 +26,7 @@ auto BaseTexture<T>::transform(void (*cb)(T &pix)) -> BaseTexture & {
 template <typename T>
 auto BaseTexture<T>::transform(void (*cb)(T &pix, i32 x, i32 y)) -> BaseTexture & {
   for (const auto [x, y] : size_rect()) {
-    cb(at(x, y), x, y);
+    cb((*this)(x, y), x, y);
   }
   return *this;
 }
@@ -72,6 +72,8 @@ auto BaseTexture<T>::fill_mix(RectI rect, const T &color) -> BaseTexture & {
 }
 
 template class BaseTexture<PixelB>;
+template class BaseTexture<PixelS>;
 template class BaseTexture<PixelF>;
+template class BaseTexture<PixelD>;
 
 } // namespace pl2d

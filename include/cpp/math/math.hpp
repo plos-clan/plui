@@ -15,14 +15,14 @@ template <typename T>
 static auto equals(const T &a, const T &b) -> bool {
   return a == b;
 }
-
+// 浮点相近就判断为相等
 template <>
-static auto equals(const f32 &a, const f32 &b) -> bool {
+auto equals(const f32 &a, const f32 &b) -> bool {
   return a - b < F32_EPSILON && a - b > -F32_EPSILON;
 }
-
+// 浮点相近就判断为相等
 template <>
-static auto equals(const f64 &a, const f64 &b) -> bool {
+auto equals(const f64 &a, const f64 &b) -> bool {
   return a - b < F64_EPSILON && a - b > -F64_EPSILON;
 }
 
@@ -135,6 +135,18 @@ template <typename T>
 static auto abs(T x) -> T {
   return x >= 0 ? x : -x;
 }
+template <typename T>
+static auto abs(T x, T y) -> T {
+  return sqrt(x * x + y * y);
+}
+template <typename T>
+static auto abs(T x, T y, T z) -> T {
+  return sqrt(x * x + y * y + z * z);
+}
+template <typename T>
+static auto abs(T x, T y, T z, T w) -> T {
+  return sqrt(x * x + y * y + z * z + w * w);
+}
 
 template <typename T>
 static auto gcd(T a, T b) -> T {
@@ -166,6 +178,14 @@ static auto mod(f64 x, f64 y) -> f64 {
   return x - (i64)(x / y) * y;
 }
 #endif
+
+finline auto factorial(u32 n) -> u64 {
+  u64 result = 1;
+  for (u32 i = 2; i <= n; i++) {
+    result *= i;
+  }
+  return result;
+}
 
 // #if __has(abs)
 // #else

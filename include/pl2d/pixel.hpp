@@ -59,7 +59,7 @@ struct BasePixel;
 #define BasePixelST BasePixel<u16, U16_MAX, I16_MAX, u32, f32>
 #define BasePixelIT BasePixel<u32, U32_MAX, I32_MAX, u64, f64>
 #define BasePixelFT BasePixel<f32, 1, 1, f32, f32>
-#define BasePixelDT BasePixel<f64, 1, 1, f32, f64>
+#define BasePixelDT BasePixel<f64, 1, 1, f64, f64>
 
 using PixelB = BasePixelBT; // byte
 using PixelS = BasePixelST; // short
@@ -78,11 +78,11 @@ struct BasePixel {
       T r = 0, g = 0, b = 0, a = 0;
 #endif
     };
-    T d[4];
+    T d[4]; // 已废弃
   };
 
   BasePixel() = default;
-  BasePixel(u32);
+  BasePixel(u32); // 0xRRGGBBAA 的格式来初始化颜色（仅当定义了 COLOR_READABLE_HEX）
   BasePixel(T r, T g, T b) : r(r), g(g), b(b), a(T_MAX) {}
   BasePixel(T r, T g, T b, T a) : r(r), g(g), b(b), a(a) {}
   BasePixel(const BasePixel &)                         = default;
@@ -114,6 +114,7 @@ struct BasePixel {
     return mix(*this, s);
   }
 
+  // 计算颜色的差值
   auto diff(const BasePixel &p) -> T {
     T dr = cpp::diff(r, p.r);
     T dg = cpp::diff(g, p.g);
@@ -121,23 +122,42 @@ struct BasePixel {
     return cpp::max(dr, dg, db);
   }
 
-  void        mix_ratio(const BasePixel &s, T r);
-  static auto mix_ratio(const BasePixel &c1, const BasePixel &c2, T r) -> BasePixel;
+  // 按比例进行颜色混合函数
+  void        mix_ratio(const BasePixel &s, T k);
+  static auto mix_ratio(const BasePixel &c1, const BasePixel &c2, T k) -> BasePixel;
+  // 背景色不透明的混合函数
   void        mix_opaque(const BasePixel &s);
   static auto mix_opaque(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
+  // 通用的混合函数
   void        mix(const BasePixel &s);
   static auto mix(const BasePixel &c1, const BasePixel &c2) -> BasePixel;
 
   auto brightness() const -> T;        // 亮度
   auto grayscale() const -> BasePixel; // 也是亮度，但填充成完整的 rgba
-  auto gamma_correct() const -> BasePixel;
-  auto reverse_gamma() const -> BasePixel;
 
-  auto to_u8() const -> PixelB;
-  auto to_u16() const -> PixelS;
-  auto to_u32() const -> PixelI;
-  auto to_f32() const -> PixelF;
-  auto to_f64() const -> PixelD;
+  auto gamma_correct() const -> BasePixel; // 进行 gamma 矫正
+  auto reverse_gamma() const -> BasePixel; // 反向 gamma 矫正
+
+  // 已废弃的转换函数
+  auto to_u8() const -> PixelB {
+    return *this;
+  }
+  // 已废弃的转换函数
+  auto to_u16() const -> PixelS {
+    return *this;
+  }
+  // 已废弃的转换函数
+  auto to_u32() const -> PixelI {
+    return *this;
+  }
+  // 已废弃的转换函数
+  auto to_f32() const -> PixelF {
+    return *this;
+  }
+  // 已废弃的转换函数
+  auto to_f64() const -> PixelD {
+    return *this;
+  }
 
   void RGB2Grayscale();
   void RGB2HSV();

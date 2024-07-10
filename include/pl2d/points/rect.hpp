@@ -52,17 +52,22 @@ struct BaseRect {
     return {x2, y2};
   }
 
-  void trunc(T w, T h) {
+  auto trunc(T w, T h) -> BaseRect & {
     x1 = cpp::max(0, x1);
     y1 = cpp::max(0, y1);
     x2 = cpp::min(w - 1, x2);
     y2 = cpp::min(h - 1, y2);
+    return *this;
   }
-  void trunc(BaseRect r) {
+  auto trunc(BaseRect r) -> BaseRect & {
     x1 = cpp::max(r.x1, x1);
     y1 = cpp::max(r.y1, y1);
     x2 = cpp::min(r.x2, x2);
     y2 = cpp::min(r.y2, y2);
+    return *this;
+  }
+  auto trunc(T x1, T y1, T x2, T y2) -> BaseRect & {
+    return trunc({x1, y1, x2, y2});
   }
 
   void contain(T x, T y) {

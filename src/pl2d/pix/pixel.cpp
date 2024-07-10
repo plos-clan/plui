@@ -10,7 +10,7 @@ template <BasePixelTemplate>
 BasePixelT::BasePixel(u32 c) {
 #if COLOR_READABLE_HEX
 #  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  byte r = c >> 24, g = c >> 16, b = c >> 8, a;
+  byte r = c >> 24, g = c >> 16, b = c >> 8, a = c;
 #  else
   byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
 #  endif
@@ -18,13 +18,13 @@ BasePixelT::BasePixel(u32 c) {
 #  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   byte b = c, g = c >> 8, r = c >> 16, a = c >> 24;
 #  else
-  byte b = c >> 24, g = c >> 16, r = c >> 8, a;
+  byte b = c >> 24, g = c >> 16, r = c >> 8, a = c;
 #  endif
 #else
 #  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   byte r = c, g = c >> 8, b = c >> 16, a = c >> 24;
 #  else
-  byte r = c >> 24, g = c >> 16, b = c >> 8, a;
+  byte r = c >> 24, g = c >> 16, b = c >> 8, a = c;
 #  endif
 #endif
   if constexpr (std::is_floating_point_v<T>) {
@@ -79,29 +79,8 @@ template BasePixelDT::BasePixel(const BasePixelFT &);
 
 template <BasePixelTemplate>
 BasePixelT::operator u32() {
-  PixelB p = to_u8();
+  const PixelB p = *this;
   return RGBA(p.r, p.g, p.b, p.a);
-}
-
-template <BasePixelTemplate>
-auto BasePixelT::to_u8() const -> PixelB {
-  return *this;
-}
-template <BasePixelTemplate>
-auto BasePixelT::to_u16() const -> PixelS {
-  return *this;
-}
-template <BasePixelTemplate>
-auto BasePixelT::to_u32() const -> PixelI {
-  return *this;
-}
-template <BasePixelTemplate>
-auto BasePixelT::to_f32() const -> PixelF {
-  return *this;
-}
-template <BasePixelTemplate>
-auto BasePixelT::to_f64() const -> PixelD {
-  return *this;
 }
 
 template class BasePixelBT;

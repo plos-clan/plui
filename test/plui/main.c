@@ -102,10 +102,16 @@ void screen_flush() {
                screen_height, true);
   XFlush(display);
 
-  // static u64 old_time = 0;
-  // u64        time     = monotonic_us();
-  // printf("%lf\n", 1e6 / (time - old_time));
-  // old_time = time;
+  static u64 old_time = 0;
+  u64        time, frame_time;
+  while (true) {
+    time       = monotonic_us();
+    frame_time = time - old_time;
+    if (frame_time >= 16667) break;
+    usleep(16667 - frame_time);
+  }
+  // printf("%lf\n", 1e6 / frame_time);
+  old_time = time;
 }
 
 int loop_body(XEvent e, int pending) {

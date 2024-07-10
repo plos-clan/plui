@@ -20,31 +20,42 @@ struct BaseTexture {
   BaseTexture(u32 width, u32 height, u32 pitch);
   BaseTexture(T *pixels, u32 width, u32 height);
   BaseTexture(T *pixels, u32 width, u32 height, u32 pitch);
-  BaseTexture(const BaseTexture &) = delete;
+  BaseTexture(const BaseTexture &) = delete; // 隐式地复制是不允许的
   BaseTexture(BaseTexture &&) noexcept;
   ~BaseTexture();
-  auto operator=(const BaseTexture &) -> BaseTexture & = delete;
+  auto operator=(const BaseTexture &) -> BaseTexture & = delete; // 隐式地复制是不允许的
   auto operator=(BaseTexture &&) noexcept -> BaseTexture &;
 
-  void reset() {
-    *this = {};
-  }
+  auto reset() -> BaseTexture &;
 
   auto ready() const -> bool {
     return pixels != null;
   }
 
   // 使用运算符访问不进行安全检查
-  auto operator[](size_t y) const -> const T * {
+  auto operator[](i32 y) const -> const T * {
     return &pixels[y * pitch];
   }
-  auto operator[](size_t y) -> T * {
+  auto operator[](i32 y) -> T * {
     return &pixels[y * pitch];
   }
-  auto operator()(size_t x, size_t y) const -> const T & {
+  auto operator()(i32 x, i32 y) const -> const T & {
     return pixels[y * pitch + x];
   }
-  auto operator()(size_t x, size_t y) -> T & {
+  auto operator()(i32 x, i32 y) -> T & {
+    return pixels[y * pitch + x];
+  }
+  // 不进行安全检查
+  auto pix(ssize_t i) const -> const T & {
+    return pixels[i];
+  }
+  auto pix(ssize_t i) -> T & {
+    return pixels[i];
+  }
+  auto pix(i32 x, i32 y) const -> const T & {
+    return pixels[y * pitch + x];
+  }
+  auto pix(i32 x, i32 y) -> T & {
     return pixels[y * pitch + x];
   }
   // 进行安全检查
@@ -68,13 +79,17 @@ struct BaseTexture {
   }
 
   // 获取与 texture 一样大的 rect
-  auto size_rect() -> Rect {
+  auto size_rect() const -> Rect {
     return {0, 0, (i32)width - 1, (i32)height - 1};
   }
 
   auto copy() -> BaseTexture *;
-  auto copy_to(BaseTexture &d) const -> bool;
-  auto copy_from(const BaseTexture &d) -> bool;
+  template <typename T2>
+  auto copy_to(BaseTexture<T2> &d) const -> bool {
+    return d.copy_from(*this);
+  }
+  template <typename T2>
+  auto copy_from(const BaseTexture<T2> &d) -> bool;
 
   auto clear() -> BaseTexture &;
 
@@ -88,6 +103,9 @@ struct BaseTexture {
   auto set(i32 x, i32 y, byte r, byte g, byte b, byte a) -> BaseTexture &;
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> BaseTexture &;
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTexture &;
+
+  auto fft() -> BaseTexture &;
+  auto ift() -> BaseTexture &;
 
   //% 缩放 resize会创建新对象 resize_to不会创建新对象
   auto resize_to(float s) -> BaseTexture &;      // 缩放到 s 倍
@@ -121,7 +139,9 @@ struct BaseTexture {
 };
 
 using TextureB = BaseTexture<PixelB>;
+using TextureS = BaseTexture<PixelS>;
 using TextureF = BaseTexture<PixelF>;
+using TextureD = BaseTexture<PixelD>;
 using Texture  = TextureB;
 
 } // namespace pl2d

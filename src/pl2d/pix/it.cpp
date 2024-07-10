@@ -124,4 +124,84 @@ INSTANTIATION(color_luv_interpolate)
 
 #undef INSTANTIATION
 
+// namespace color {
+
+// class InterpolateRect {
+//   i32    x1, y1, x2, y2 ;
+//   PixelF topleft, topright, bottomleft, bottomright;
+
+// public:
+//   InterpolateRect() = delete;
+//   InterpolateRect(i32 w, i32 h) : x1(0), y1(0), x2(w - 1), y2(h - 1) {}
+//   InterpolateRect(i32 x1, i32 y1, i32 x2, i32 y2) : x1(x1), y1(y1), x2(x2), y2(y2) {}
+
+//   class Iterator {
+//   private:
+//     i32 x1, y1, x2, y2;
+//     i32 x, y;
+
+//   public:
+//     Iterator() = delete;
+//     Iterator(i32 x1, i32 y1, i32 x2, i32 y2) : x1(x1), y1(y1), x2(x2), y2(y2), x(x1), y(y1) {}
+//     Iterator(i32 x1, i32 y1, i32 x2, i32 y2, i32 x, i32 y)
+//         : x1(x1), y1(y1), x2(x2), y2(y2), x(x), y(y) {}
+//     Iterator(const Iterator &)                         = default;
+//     Iterator(Iterator &&) noexcept                     = default;
+//     auto operator=(const Iterator &) -> Iterator     & = default;
+//     auto operator=(Iterator &&) noexcept -> Iterator & = default;
+
+//     auto operator*() -> Point2I {
+//       return {x, y};
+//     }
+
+//     auto operator++() -> Iterator & {
+//       x++;
+//       if (x > x2) {
+//         x = x1;
+//         y++;
+//       }
+//       return *this;
+//     }
+
+//     auto operator==(const Iterator &it) const -> bool {
+//       return y == it.y && x == it.x;
+//     }
+
+//     auto operator!=(const Iterator &it) const -> bool {
+//       return y != it.y || x != it.x;
+//     }
+//   };
+
+//   auto begin() const -> Iterator {
+//     return {x1, y1, x2, y2, x1, y1};
+//   }
+
+//   auto end() const -> Iterator {
+//     return {x1, y1, x2, y2, x1, y2 + 1};
+//   }
+// };
+
+// } // namespace color
+
+// void pd2d_color_interpolate(color_t *restrict colors, int ncolors, color_t src, color_t dst) {
+//   if (interpolate_mode_lab) {
+//     RGB2LAB(&src);
+//     RGB2LAB(&dst);
+//   }
+
+//   for (int i = 0; i < ncolors; i++) {
+//     float k     = (float)i / (ncolors - 1);
+//     colors[i].r = (1 - k) * src.r + k * dst.r;
+//     colors[i].g = (1 - k) * src.g + k * dst.g;
+//     colors[i].b = (1 - k) * src.b + k * dst.b;
+//     colors[i].a = (1 - k) * src.a + k * dst.a;
+//   }
+
+//   if (interpolate_mode_lab) {
+//     for (int i = 0; i < ncolors; i++) {
+//       LAB2RGB(colors + i);
+//     }
+//   }
+// }
+
 } // namespace pl2d

@@ -39,6 +39,7 @@ namespace plds {
 FrameBuffer    screen_fb;
 pl2d::TextureB screen_tex;
 
+pl2d::TextureB image_tex;
 pl2d::TextureB frame_tex[19];
 
 static auto &fb  = screen_fb;
@@ -62,6 +63,13 @@ auto init(void *buffer, u32 width, u32 height, PixFmt fmt) -> int {
     });
   }
 
+  load_qoi_to_tex("test.qoi", image_tex);
+  pl2d::TextureF tmp(image_tex.width, image_tex.height);
+  image_tex.copy_to(tmp);
+  tmp.fft();
+  tmp.ift();
+  tmp.copy_to(image_tex);
+
   return on::screen_resize(buffer, width, height, fmt);
 }
 
@@ -73,8 +81,12 @@ void flush() {
   float        i = (f32)nframe * .01f;
   pl2d::PixelF p = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
   p.LAB2RGB();
-  tex.fill(tex.size_rect(), p);
+  tex.fill(p);
+  tex.transform([](pl2d::PixelB &pix, i32 x, i32 y) {
+    if ((x + y) / 25 % 2 == 0) pix.mix_ratio(0xffffffff, 64);
+  });
   frame_tex[nframe / 60 % 19].paste_to_mix(tex, 20, 20);
+  image_tex.paste_to_mix(tex, 900, 0);
   fb.flush(tex);
   screen_flush();
 }

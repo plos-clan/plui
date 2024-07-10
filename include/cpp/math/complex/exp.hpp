@@ -8,13 +8,12 @@
 namespace cpp {
 
 #if __has(cexp)
-auto cexp(cf32 z) -> cf32 {
+static auto cexp(cf32 z) -> cf32 {
   return __builtin_cexpf(z);
 }
-auto cexp(cf64 z) -> cf64 {
+static auto cexp(cf64 z) -> cf64 {
   return __builtin_cexp(z);
 }
-
 #else
 auto cexp(cf32 z) -> cf32 {
   double exp_real = exp(__real__ z);
