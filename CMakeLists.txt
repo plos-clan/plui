@@ -14,8 +14,8 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # set(CMAKE_C_FLAGS "-std=gnu2x -flto -Ofast -march=native")
 # set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -Ofast -march=native")
-set(CMAKE_C_FLAGS "-std=gnu2x -flto -Og")
-set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -Og")
+set(CMAKE_C_FLAGS "-std=gnu2x -flto -g -Og")
+set(CMAKE_CXX_FLAGS "-std=gnu++2b -flto -g -Og")
 
 include(cmake/gtest)
 include(cmake/show-flags) 

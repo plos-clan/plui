@@ -3,7 +3,9 @@
 #include <osapi.h>
 #include <type.h>
 
-#define bit_rev(n) (bit_reverse((u64)(n)) >> (64 - log_n))
+#ifdef __clang__
+
+#  define bit_rev(n) (bit_reverse((u64)(n)) >> (64 - log_n))
 
 //* float128
 
@@ -406,7 +408,7 @@ dlexport f128 *fftl_c2r_a(cf128 *s, size_t l) {
   return y;
 }
 
-#undef bit_rev
+#  undef bit_rev
 
 dlexport void fftl_2d_p(cf128 *x, cf128 *s, size_t w, size_t h, size_t p, bool r) {
   for (size_t i = 0; i < h; i++) {
@@ -457,3 +459,5 @@ dlexport f128 *fftl_2d_r2r_a(f128 *s, size_t w, size_t h, bool r) {
   fftl_2d_r2r(x, s, w, h, r);
   return x;
 }
+
+#endif

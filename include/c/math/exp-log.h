@@ -63,7 +63,7 @@ finline float powf(float a, float b) {
   return exp2f(b * log2f(a));
 }
 
-finline float pow(float a, float b) {
+finline double pow(double a, double b) {
   return exp2(b * log2(a));
 }
 

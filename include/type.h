@@ -151,20 +151,24 @@ typedef _Complex __UINT64_TYPE__ cuint64_t;
 typedef _Complex _Float16        cfloat16_t;
 typedef _Complex float           cfloat32_t;
 typedef _Complex double          cfloat64_t;
-typedef _Complex __float128      cfloat128_t;
+#ifdef __clang__
+typedef _Complex __float128 cfloat128_t;
+#endif
 
-typedef cint8_t     ci8;
-typedef cuint8_t    cu8;
-typedef cint16_t    ci16;
-typedef cuint16_t   cu16;
-typedef cint32_t    ci32;
-typedef cuint32_t   cu32;
-typedef cint64_t    ci64;
-typedef cuint64_t   cu64;
-typedef cfloat16_t  cf16;
-typedef cfloat32_t  cf32;
-typedef cfloat64_t  cf64;
+typedef cint8_t    ci8;
+typedef cuint8_t   cu8;
+typedef cint16_t   ci16;
+typedef cuint16_t  cu16;
+typedef cint32_t   ci32;
+typedef cuint32_t  cu32;
+typedef cint64_t   ci64;
+typedef cuint64_t  cu64;
+typedef cfloat16_t cf16;
+typedef cfloat32_t cf32;
+typedef cfloat64_t cf64;
+#ifdef __clang__
 typedef cfloat128_t cf128;
+#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~ 标准库原子操作部分
@@ -249,13 +253,15 @@ enum {
   atom_seq_cst = __ATOMIC_SEQ_CST,
 };
 
-#if NO_STD || !defined(__cplusplus)
+#if !(defined(__cplusplus) && defined(__GNUC__) && !defined(__clang__))
+#  if NO_STD || !defined(__cplusplus)
 // 消除一种类型为 T 的数据类型的依赖关系
-#  define kill_dependency(x)                                                                       \
-    ({                                                                                             \
-      auto __tmp = (x);                                                                            \
-      __tmp;                                                                                       \
-    })
+#    define kill_dependency(x)                                                                     \
+      ({                                                                                           \
+        auto __tmp = (x);                                                                          \
+        __tmp;                                                                                     \
+      })
+#  endif
 #endif
 
 #define ATOMIC_VAR_INIT(val) (val)
@@ -271,13 +277,62 @@ enum {
 #if NO_STD || !defined(__cplusplus)
 #  define atomic _Atomic
 #endif
+
 #define atom _Atomic
+
+#if defined(__cplusplus) && defined(__GNUC__) && !defined(__clang__)
+
+extern "C++" {
+#  include <bits/atomic_base.h>
+using std::__atomic_base;
+}
+
+typedef __atomic_base<bool>               atomic_bool;
+typedef __atomic_base<char>               atomic_char;
+typedef __atomic_base<signed char>        atomic_schar;
+typedef __atomic_base<unsigned char>      atomic_uchar;
+typedef __atomic_base<short>              atomic_short;
+typedef __atomic_base<unsigned short>     atomic_ushort;
+typedef __atomic_base<int>                atomic_int;
+typedef __atomic_base<unsigned int>       atomic_uint;
+typedef __atomic_base<long>               atomic_long;
+typedef __atomic_base<unsigned long>      atomic_ulong;
+typedef __atomic_base<long long>          atomic_llong;
+typedef __atomic_base<unsigned long long> atomic_ullong;
+
+typedef __atomic_base<int8_t>    atomic_int8_t;
+typedef __atomic_base<uint8_t>   atomic_uint8_t;
+typedef __atomic_base<int16_t>   atomic_int16_t;
+typedef __atomic_base<uint16_t>  atomic_uint16_t;
+typedef __atomic_base<int32_t>   atomic_int32_t;
+typedef __atomic_base<uint32_t>  atomic_uint32_t;
+typedef __atomic_base<int64_t>   atomic_int64_t;
+typedef __atomic_base<uint64_t>  atomic_uint64_t;
+typedef __atomic_base<int128_t>  atomic_int128_t;
+typedef __atomic_base<uint128_t> atomic_uint128_t;
+
+typedef __atomic_base<intmax_t>  atomic_intmax_t;
+typedef __atomic_base<uintmax_t> atomic_uintmax_t;
+
+typedef __atomic_base<char16_t> atomic_char16_t;
+typedef __atomic_base<char32_t> atomic_char32_t;
+typedef __atomic_base<wchar_t>  atomic_wchar_t;
+
+typedef __atomic_base<intptr_t>  atomic_intptr_t;
+typedef __atomic_base<uintptr_t> atomic_uintptr_t;
+typedef __atomic_base<ssize_t>   atomic_ssize_t;
+typedef __atomic_base<size_t>    atomic_size_t;
+typedef __atomic_base<ptrdiff_t> atomic_ptrdiff_t;
+
+typedef __atomic_base<bool> atomic_flag_t;
+
+#else
 
 typedef _Atomic bool               atomic_bool;
 typedef _Atomic char               atomic_char;
 typedef _Atomic signed char        atomic_schar;
 typedef _Atomic unsigned char      atomic_uchar;
-typedef _Atomic short              atomic_shor;
+typedef _Atomic short              atomic_short;
 typedef _Atomic unsigned short     atomic_ushort;
 typedef _Atomic int                atomic_int;
 typedef _Atomic unsigned int       atomic_uint;
@@ -310,60 +365,64 @@ typedef _Atomic ssize_t   atomic_ssize_t;
 typedef _Atomic size_t    atomic_size_t;
 typedef _Atomic ptrdiff_t atomic_ptrdiff_t;
 
+typedef _Atomic bool atomic_flag_t;
+
+#endif
+
 #if NO_STD || !defined(__cplusplus)
 #  define atomic_thread_fence(mo)  __atomic_thread_fence(mo)
 #  define atomic_signal_fence(mo)  __atomic_signal_fence(mo)
 #  define atomic_is_lock_free(obj) __atomic_is_lock_free(sizeof(*(obj)), (obj))
 #endif
 
-typedef _Atomic bool atomic_flag_t;
-
-#define ATOMIC_FLAG_INIT false
+#if !(defined(__cplusplus) && defined(__GNUC__) && !defined(__clang__))
+#  define ATOMIC_FLAG_INIT false
+#endif
 
 //~ 自定义的
 
-typedef _Atomic bool               atom_bool;
-typedef _Atomic char               atom_char;
-typedef _Atomic signed char        atom_schar;
-typedef _Atomic unsigned char      atom_uchar;
-typedef _Atomic short              atom_short;
-typedef _Atomic unsigned short     atom_ushort;
-typedef _Atomic int                atom_int;
-typedef _Atomic unsigned int       atom_uint;
-typedef _Atomic long               atom_long;
-typedef _Atomic unsigned long      atom_ulong;
-typedef _Atomic long long          atom_llong;
-typedef _Atomic unsigned long long atom_ullong;
+typedef atomic_bool   atom_bool;
+typedef atomic_char   atom_char;
+typedef atomic_schar  atom_schar;
+typedef atomic_uchar  atom_uchar;
+typedef atomic_short  atom_short;
+typedef atomic_ushort atom_ushort;
+typedef atomic_int    atom_int;
+typedef atomic_uint   atom_uint;
+typedef atomic_long   atom_long;
+typedef atomic_ulong  atom_ulong;
+typedef atomic_llong  atom_llong;
+typedef atomic_ullong atom_ullong;
 
-typedef _Atomic int8_t    atom_i8;
-typedef _Atomic uint8_t   atom_u8;
-typedef _Atomic int16_t   atom_i16;
-typedef _Atomic uint16_t  atom_u16;
-typedef _Atomic int32_t   atom_i32;
-typedef _Atomic uint32_t  atom_u32;
-typedef _Atomic int64_t   atom_i64;
-typedef _Atomic uint64_t  atom_u64;
-typedef _Atomic int128_t  atom_i128;
-typedef _Atomic uint128_t atom_u128;
+typedef atomic_int8_t    atom_i8;
+typedef atomic_uint8_t   atom_u8;
+typedef atomic_int16_t   atom_i16;
+typedef atomic_uint16_t  atom_u16;
+typedef atomic_int32_t   atom_i32;
+typedef atomic_uint32_t  atom_u32;
+typedef atomic_int64_t   atom_i64;
+typedef atomic_uint64_t  atom_u64;
+typedef atomic_int128_t  atom_i128;
+typedef atomic_uint128_t atom_u128;
 
-typedef _Atomic intmax_t  atom_imax_t;
-typedef _Atomic uintmax_t atom_umax_t;
+typedef atomic_intmax_t  atom_imax_t;
+typedef atomic_uintmax_t atom_umax_t;
 
-typedef _Atomic char16_t atom_char16_t;
-typedef _Atomic char32_t atom_char32_t;
-typedef _Atomic wchar_t  atom_wchar_t;
+typedef atomic_char16_t atom_char16_t;
+typedef atomic_char32_t atom_char32_t;
+typedef atomic_wchar_t  atom_wchar_t;
 
-typedef _Atomic intptr_t  atom_iptr_t;
-typedef _Atomic uintptr_t atom_uptr_t;
-typedef _Atomic ssize_t   atom_ssize_t;
-typedef _Atomic size_t    atom_size_t;
-typedef _Atomic ptrdiff_t atom_pdiff_t;
+typedef atomic_intptr_t  atom_iptr_t;
+typedef atomic_uintptr_t atom_uptr_t;
+typedef atomic_ssize_t   atom_ssize_t;
+typedef atomic_size_t    atom_size_t;
+typedef atomic_ptrdiff_t atom_pdiff_t;
 
 #define atom_thread_fence(mo)  __atomic_thread_fence(mo)
 #define atom_signal_fence(mo)  __atomic_signal_fence(mo)
 #define atom_is_lock_free(obj) __atomic_is_lock_free(sizeof(*(obj)), (obj))
 
-typedef _Atomic bool atom_flag_t;
+typedef atomic_flag_t atom_flag_t;
 
 #define ATOM_FLAG_INIT false
 

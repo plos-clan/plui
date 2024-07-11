@@ -1,8 +1,9 @@
 #include <config.h>
 #undef NO_STD
 #define NO_STD 0
-#include <cmath>
 #include <cpp.hpp>
+
+#include <cmath>
 #include <gtest/gtest.h>
 
 TEST(PowFloatTest, PositiveExponents) {

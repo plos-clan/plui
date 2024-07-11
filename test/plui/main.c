@@ -110,7 +110,7 @@ void screen_flush() {
     if (frame_time >= 16667) break;
     usleep(16667 - frame_time);
   }
-  printf("%lf\n", 1e6 / frame_time);
+  // printf("%lf\n", 1e6 / frame_time);
   old_time = time;
 }
 
@@ -167,9 +167,14 @@ quit:
 int main() {
   init_xlib(1280, 720);
 
-  int ret = plds_init(image->data, screen_width, screen_height, pl2d_PixFmt_BGRA);
-  if (ret < 0) return -ret;
+  {
+    u64 time = monotonic_us();
+    int ret  = plds_init(image->data, screen_width, screen_height, pl2d_PixFmt_BGRA);
+    if (ret < 0) return -ret;
+    printf("%ld us\n", monotonic_us() - time);
+  }
 
+  int    ret;
   XEvent event;
   while (!exit_flag) {
     XNextEvent(display, &event);
