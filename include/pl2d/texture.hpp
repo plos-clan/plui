@@ -109,6 +109,11 @@ struct BaseTexture {
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b) -> BaseTexture &;
   auto set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTexture &;
 
+  auto gaussian_blur(i32 size = 7, f32 sigma = 1) -> BaseTexture &; // 高斯模糊
+  auto blur() -> BaseTexture & {
+    return gaussian_blur();
+  }
+
   auto fft() -> BaseTexture &; // 对图像进行快速傅里叶变换
   auto ift() -> BaseTexture &; // 对图像进行快速逆傅里叶变换
 

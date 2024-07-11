@@ -1,5 +1,5 @@
 file(GLOB_RECURSE c_files "*.c")
 file(GLOB_RECURSE cpp_files "*.cpp")
 testexec(plui ${c_files} ${cpp_files})
-testlib(plui plui-c plui-cpp pl2d plds)
+testlib(plui plui-c plui-cpp pl2d plds plui)
 testlib(plui X11 Xext)

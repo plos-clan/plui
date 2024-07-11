@@ -106,12 +106,65 @@ struct BasePixel {
     return d[n];
   }
 
+  auto operator+(const BasePixel &s) const -> BasePixel {
+    return BasePixel{
+        (T)(r + s.r),
+        (T)(g + s.g),
+        (T)(b + s.b),
+        (T)(a + s.a),
+    };
+  }
   auto operator+=(const BasePixel &s) -> BasePixel & {
-    mix(s);
+    r += s.r;
+    g += s.g;
+    b += s.b;
+    a += s.a;
     return *this;
   }
-  auto operator+(const BasePixel &s) const -> BasePixel {
-    return mix(*this, s);
+  auto operator-(const BasePixel &s) const -> BasePixel {
+    return BasePixel{
+        (T)(r - s.r),
+        (T)(g - s.g),
+        (T)(b - s.b),
+        (T)(a - s.a),
+    };
+  }
+  auto operator-=(const BasePixel &s) -> BasePixel & {
+    r -= s.r;
+    g -= s.g;
+    b -= s.b;
+    a -= s.a;
+    return *this;
+  }
+  auto operator*(f32 s) const -> BasePixel {
+    return BasePixel{
+        (T)(r * s),
+        (T)(g * s),
+        (T)(b * s),
+        (T)(a * s),
+    };
+  }
+  auto operator*=(f32 s) -> BasePixel & {
+    r *= r;
+    g *= s;
+    b *= s;
+    a *= s;
+    return *this;
+  }
+  auto operator/(f32 s) const -> BasePixel {
+    return BasePixel{
+        (T)(r / s),
+        (T)(g / s),
+        (T)(b / s),
+        (T)(a / s),
+    };
+  }
+  auto operator/=(f32 s) -> BasePixel & {
+    r /= r;
+    g /= s;
+    b /= s;
+    a /= s;
+    return *this;
   }
 
   // 计算颜色的差值

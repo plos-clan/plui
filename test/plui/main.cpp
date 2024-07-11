@@ -62,13 +62,15 @@ auto init(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt) -> int {
     frame_tex[i].transform([](pl2d::PixelB &pix) {
       if (pix.brightness() > 240) pix = 0;
     });
+    // frame_tex[i].gaussian_blur(11, 2);
   }
 
   load_qoi_to_tex("test.qoi", image_tex);
   pl2d::TextureF tmp(image_tex.width, image_tex.height);
   image_tex.copy_to(tmp);
-  tmp.fft();
-  tmp.ift();
+  // tmp.fft();
+  // tmp.ift();
+  // tmp.blur();
   tmp.copy_to(image_tex);
 
   return on::screen_resize(buffer, width, height, fmt);

@@ -6,38 +6,48 @@
 
 namespace pl2d {
 
-// float gaussian_kernel_5[5] = {0.06136, 0.24477, 0.38774, 0.24477, 0.06136};
+template <typename T>
+auto BaseTexture<T>::gaussian_blur(i32 size, f32 sigma) -> BaseTexture & {
+  auto *tmp    = (PixelF *)malloc(cpp::max(width, height) * sizeof(PixelF));
+  f32  *kernel = (f32 *)malloc(size * sizeof(f32));
+  cpp::gaussian_kernel_1(kernel, size, sigma);
 
-// 一维高斯模糊卷积核
-void gaussian_kernel_1(f32 *kernel, i32 size, f32 sigma) {
-  i32 center = size / 2;
-  f32 sum    = 0;
-  f32 k      = -1 / (2 * sigma * sigma);
-  for (i32 i = 0; i < size; i++) {
-    const i32 x  = i - center;
-    kernel[i]    = cpp::exp((x * x) * k);
-    sum         += kernel[i];
-  }
-  for (i32 i = 0; i < size; i++) {
-    kernel[i] /= sum;
-  }
-}
-
-// 二维高斯模糊卷积核
-void gaussian_kernel_2(f32 *kernel, i32 size, f32 sigma) {
-  i32 center = size / 2;
-  f32 sum    = 0;
-  f32 k      = -1 / (2 * sigma * sigma);
-  for (i32 i = 0; i < size; i++) {
-    for (i32 j = 0; j < size; j++) {
-      const i32 x = i - center, y = j - center;
-      kernel[i * size + j]  = cpp::exp((x * x + y * y) * k);
-      sum                  += kernel[i * size + j];
+  for (i32 y = 0; y < height; y++) {
+    for (i32 x = 0; x < width; x++) {
+      PixelF sum = 0;
+      for (i32 j = 0; j < size; j++) {
+        int index  = cpp::clamp(x - size / 2 + j, 0, (i32)width - 1);
+        sum       += (PixelF)(*this)(index, y) * kernel[j];
+      }
+      tmp[x] = sum;
+    }
+    for (i32 x = 0; x < width; x++) {
+      (*this)(x, y) = tmp[x];
     }
   }
-  for (i32 i = 0; i < size * size; i++) {
-    kernel[i] /= sum;
+
+  for (i32 x = 0; x < width; x++) {
+    for (i32 y = 0; y < height; y++) {
+      PixelF sum = 0;
+      for (i32 j = 0; j < size; j++) {
+        int index  = cpp::clamp(y - size / 2 + j, 0, (i32)height - 1);
+        sum       += (PixelF)(*this)(x, index) * kernel[j];
+      }
+      tmp[y] = sum;
+    }
+    for (i32 y = 0; y < height; y++) {
+      (*this)(x, y) = tmp[y];
+    }
   }
+
+  free(kernel);
+  free(tmp);
+  return *this;
 }
+
+template class BaseTexture<PixelB>;
+template class BaseTexture<PixelS>;
+template class BaseTexture<PixelF>;
+template class BaseTexture<PixelD>;
 
 } // namespace pl2d
