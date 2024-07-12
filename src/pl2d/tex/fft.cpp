@@ -98,9 +98,6 @@ auto BaseTexture<PixelD>::ift() -> BaseTexture & {
   return *this;
 }
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
 } // namespace pl2d

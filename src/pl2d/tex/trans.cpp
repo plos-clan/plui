@@ -45,9 +45,6 @@ auto BaseTexture<T>::transform(void (*cb)(BaseTexture &t, T &pix, i32 x, i32 y))
   return *this;
 }
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
 } // namespace pl2d

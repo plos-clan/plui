@@ -67,9 +67,6 @@ auto BaseTexture<T>::set(i32 x, i32 y, f32 r, f32 g, f32 b, f32 a) -> BaseTextur
   return *this;
 }
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
 } // namespace pl2d

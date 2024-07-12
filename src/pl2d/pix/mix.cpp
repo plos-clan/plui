@@ -78,10 +78,6 @@ auto BasePixelT::mix(const BasePixelT &c1, const BasePixelT &c2) -> BasePixelT {
   };
 }
 
-template class BasePixelBT;
-template class BasePixelST;
-template class BasePixelIT;
-template class BasePixelFT;
-template class BasePixelDT;
+BasePixelInstantiation
 
 } // namespace pl2d

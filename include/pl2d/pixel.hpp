@@ -36,30 +36,49 @@ enum EColorSpaceConv {
 };
 } // namespace color
 
-dlimport auto gamma_correct(f32 x) -> f32;
-dlimport auto gamma_correct(f64 x) -> f64;
-dlimport auto reverse_gamma(f32 x) -> f32;
-dlimport auto reverse_gamma(f64 x) -> f64;
+dlimport auto gamma_correct(f32 x) -> f32; // 进行 gamma 矫正
+dlimport auto gamma_correct(f64 x) -> f64; // 进行 gamma 矫正
+dlimport auto reverse_gamma(f32 x) -> f32; // 反向 gamma 矫正
+dlimport auto reverse_gamma(f64 x) -> f64; // 反向 gamma 矫正
 
+// BasePixel 结构体的模板，因为有些长就写成宏
 #define BasePixelTemplate                                                                          \
-  typename T, typename std::conditional_t<std::is_floating_point_v<T>, i32, T> T_MAX,              \
-      typename std::conditional_t<std::is_floating_point_v<T>, i32, T> T_MAX_2, typename T2,       \
-      typename FT
+  typename T /* 储存颜色值的类型（无符号整数或浮点，有符号当作无符号） */,                         \
+      typename T2 /* 直接运算时的类型（至少大一倍防止溢出） */,                                    \
+      typename FT /* 转换成浮点数运算时的类型 */,                                                  \
+      typename std::conditional_t<std::is_floating_point_v<T>, i32, T>                             \
+          T_MAX /* 最大值（浮点设置为 1） */,                                                      \
+      typename std::conditional_t<std::is_floating_point_v<T>, i32, T>                             \
+          T_MAX_2 /* 对应有符号类型的最大值（浮点设置为 1） */
+#define BasePixelT BasePixel<T, T2, FT, T_MAX, T_MAX_2>
+// 就是上面的加个下划线
 #define _BasePixelTemplate                                                                         \
-  typename _T, typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _T_MAX,          \
-      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T> _T_MAX_2, typename _T2,   \
-      typename _FT
-#define BasePixelT  BasePixel<T, T_MAX, T_MAX_2, T2, FT>
-#define _BasePixelT BasePixel<_T, _T_MAX, _T_MAX_2, _T2, _FT>
+  typename _T /* 储存颜色值的类型（无符号整数或浮点，有符号当作无符号） */,                        \
+      typename _T2 /* 直接运算时的类型（至少大一倍防止溢出） */,                                   \
+      typename _FT /* 转换成浮点数运算时的类型 */,                                                 \
+      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T>                           \
+          _T_MAX /* 最大值（浮点设置为 1） */,                                                     \
+      typename std::conditional_t<std::is_floating_point_v<_T>, i32, _T>                           \
+          _T_MAX_2 /* 对应有符号类型的最大值（浮点设置为 1） */
+#define _BasePixelT BasePixel<_T, _T2, _FT, _T_MAX, _T_MAX_2>
 
 template <BasePixelTemplate>
 struct BasePixel;
 
-#define BasePixelBT BasePixel<u8, U8_MAX, I8_MAX, u32, f32>
-#define BasePixelST BasePixel<u16, U16_MAX, I16_MAX, u32, f32>
-#define BasePixelIT BasePixel<u32, U32_MAX, I32_MAX, u64, f64>
-#define BasePixelFT BasePixel<f32, 1, 1, f32, f32>
-#define BasePixelDT BasePixel<f64, 1, 1, f64, f64>
+// 参数的含义参考 BasePixelTemplate 的定义
+#define BasePixelBT BasePixel<u8, u32, f32, U8_MAX, I8_MAX>
+#define BasePixelST BasePixel<u16, u32, f32, U16_MAX, I16_MAX>
+#define BasePixelIT BasePixel<u32, u64, f64, U32_MAX, I32_MAX>
+#define BasePixelFT BasePixel<f32, f32, f32, 1, 1>
+#define BasePixelDT BasePixel<f64, f64, f64, 1, 1>
+
+// 显式模板实例化
+#define BasePixelInstantiation                                                                     \
+  template class BasePixelBT;                                                                      \
+  template class BasePixelST;                                                                      \
+  template class BasePixelIT;                                                                      \
+  template class BasePixelFT;                                                                      \
+  template class BasePixelDT;
 
 using PixelB = BasePixelBT; // byte
 using PixelS = BasePixelST; // short
@@ -99,73 +118,24 @@ struct BasePixel {
     return r == p.r && g == p.g && b == p.b && a == p.a;
   }
 
+  // 已废弃
   auto operator[](size_t n) const -> T {
     return d[n];
   }
+  // 已废弃
   auto operator[](size_t n) -> T & {
     return d[n];
   }
 
-  auto operator+(const BasePixel &s) const -> BasePixel {
-    return BasePixel{
-        (T)(r + s.r),
-        (T)(g + s.g),
-        (T)(b + s.b),
-        (T)(a + s.a),
-    };
-  }
-  auto operator+=(const BasePixel &s) -> BasePixel & {
-    r += s.r;
-    g += s.g;
-    b += s.b;
-    a += s.a;
-    return *this;
-  }
-  auto operator-(const BasePixel &s) const -> BasePixel {
-    return BasePixel{
-        (T)(r - s.r),
-        (T)(g - s.g),
-        (T)(b - s.b),
-        (T)(a - s.a),
-    };
-  }
-  auto operator-=(const BasePixel &s) -> BasePixel & {
-    r -= s.r;
-    g -= s.g;
-    b -= s.b;
-    a -= s.a;
-    return *this;
-  }
-  auto operator*(f32 s) const -> BasePixel {
-    return BasePixel{
-        (T)(r * s),
-        (T)(g * s),
-        (T)(b * s),
-        (T)(a * s),
-    };
-  }
-  auto operator*=(f32 s) -> BasePixel & {
-    r *= r;
-    g *= s;
-    b *= s;
-    a *= s;
-    return *this;
-  }
-  auto operator/(f32 s) const -> BasePixel {
-    return BasePixel{
-        (T)(r / s),
-        (T)(g / s),
-        (T)(b / s),
-        (T)(a / s),
-    };
-  }
-  auto operator/=(f32 s) -> BasePixel & {
-    r /= r;
-    g /= s;
-    b /= s;
-    a /= s;
-    return *this;
-  }
+  // 元素逐个运算
+  auto operator+(const BasePixel &s) const -> BasePixel;
+  auto operator+=(const BasePixel &s) -> BasePixel &;
+  auto operator-(const BasePixel &s) const -> BasePixel;
+  auto operator-=(const BasePixel &s) -> BasePixel &;
+  auto operator*(f32 s) const -> BasePixel;
+  auto operator*=(f32 s) -> BasePixel &;
+  auto operator/(f32 s) const -> BasePixel;
+  auto operator/=(f32 s) -> BasePixel &;
 
   // 计算颜色的差值
   auto diff(const BasePixel &p) -> T {
@@ -228,5 +198,76 @@ struct BasePixel {
   void RGB2LUV();
   void LUV2RGB();
 };
+
+// 部分函数定义
+
+template <BasePixelTemplate>
+auto BasePixelT::operator+(const BasePixel &s) const -> BasePixel {
+  return BasePixel{
+      (T)(r + s.r),
+      (T)(g + s.g),
+      (T)(b + s.b),
+      (T)(a + s.a),
+  };
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator+=(const BasePixel &s) -> BasePixel & {
+  r += s.r;
+  g += s.g;
+  b += s.b;
+  a += s.a;
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator-(const BasePixel &s) const -> BasePixel {
+  return BasePixel{
+      (T)(r - s.r),
+      (T)(g - s.g),
+      (T)(b - s.b),
+      (T)(a - s.a),
+  };
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator-=(const BasePixel &s) -> BasePixel & {
+  r -= s.r;
+  g -= s.g;
+  b -= s.b;
+  a -= s.a;
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator*(f32 s) const -> BasePixel {
+  return BasePixel{
+      (T)(r * s),
+      (T)(g * s),
+      (T)(b * s),
+      (T)(a * s),
+  };
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator*=(f32 s) -> BasePixel & {
+  r *= r;
+  g *= s;
+  b *= s;
+  a *= s;
+  return *this;
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator/(f32 s) const -> BasePixel {
+  return BasePixel{
+      (T)(r / s),
+      (T)(g / s),
+      (T)(b / s),
+      (T)(a / s),
+  };
+}
+template <BasePixelTemplate>
+auto BasePixelT::operator/=(f32 s) -> BasePixel & {
+  r /= r;
+  g /= s;
+  b /= s;
+  a /= s;
+  return *this;
+}
 
 } // namespace pl2d

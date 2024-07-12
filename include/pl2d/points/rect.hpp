@@ -27,8 +27,28 @@ struct BaseRect {
   auto operator=(const BaseRect &) -> BaseRect     & = default;
   auto operator=(BaseRect &&) noexcept -> BaseRect & = default;
 
-  auto size() const -> size_t {
-    return (x2 - x1 + 1) * (y2 - y1 + 1);
+  static auto from_points(BasePoint2<T> *points, size_t npoints) -> BaseRect && {
+    T x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+    for (size_t i = 0; i < npoints; i++) {
+      x1 = cpp::min(x1, points[i].x);
+      y1 = cpp::min(y1, points[i].y);
+      x2 = cpp::max(x2, points[i].x);
+      y2 = cpp::max(y2, points[i].y);
+    }
+    return {x1, y1, x2, y2};
+  }
+
+  // 矩形的宽度
+  constexpr auto width() const noexcept -> size_t {
+    return x2 - x1 + 1;
+  }
+  // 矩形的高度
+  constexpr auto height() const noexcept -> size_t {
+    return y2 - y1 + 1;
+  }
+  // 矩形的大小
+  constexpr auto size() const noexcept -> size_t {
+    return width() * height();
   }
 
   auto translate(T x, T y) -> BaseRect & {
@@ -52,6 +72,7 @@ struct BaseRect {
     return {x2, y2};
   }
 
+  // 给他裁剪到指定宽高
   auto trunc(T w, T h) -> BaseRect & {
     x1 = cpp::max(0, x1);
     y1 = cpp::max(0, y1);
@@ -59,6 +80,7 @@ struct BaseRect {
     y2 = cpp::min(h - 1, y2);
     return *this;
   }
+  // 裁剪到指定矩形
   auto trunc(BaseRect r) -> BaseRect & {
     x1 = cpp::max(r.x1, x1);
     y1 = cpp::max(r.y1, y1);

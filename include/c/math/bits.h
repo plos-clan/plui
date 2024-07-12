@@ -78,3 +78,36 @@ finline u64 bit_reverse_64(u64 x) {
         u32: bit_reverse_32(x),                                                                    \
         u64: bit_reverse_64(x))
 #endif
+
+// --------------------------------------------------
+//; 字节逆序
+
+#ifndef __cplusplus
+finline u8 byteswap8(u8 x) {
+  return x;
+}
+finline u16 byteswap16(u16 x) {
+  x = ((x & 0x00ff) << 8) | ((x >> 8) & 0x00ff);
+  return x;
+}
+finline u32 byteswap32(u32 x) {
+  x = ((x & 0x00ff00ff) << 8) | ((x >> 8) & 0x00ff00ff);
+  x = (x << 16) | (x >> 16);
+  return x;
+}
+finline u64 byteswap64(u64 x) {
+  x = ((x & 0x00ff00ff00ff00ff) << 8) | ((x >> 8) & 0x00ff00ff00ff00ff);
+  x = ((x & 0x0000ffff0000ffff) << 16) | ((x >> 16) & 0x0000ffff0000ffff);
+  x = (x << 32) | (x >> 32);
+  return x;
+}
+#  define byteswap(x)                                                                              \
+    _Generic((x), u8: byteswap8(x), u16: byteswap16(x), u32: byteswap32(x), u64: byteswap64(x))
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#    define little_endian(x) (x)
+#    define big_endian(x)    (byteswap(x))
+#  else
+#    define little_endian(x) (byteswap(x))
+#    define big_endian(x)    (x)
+#  endif
+#endif

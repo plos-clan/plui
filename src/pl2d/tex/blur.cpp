@@ -118,9 +118,6 @@ auto BaseTexture<T>::gaussian_blur(i32 size, f32 sigma) -> BaseTexture & {
 }
 #endif
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
 } // namespace pl2d

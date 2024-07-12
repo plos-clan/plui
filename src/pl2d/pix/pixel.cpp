@@ -56,6 +56,7 @@ BasePixelT::BasePixel(const _BasePixelT &p) {
   }
 }
 
+// 依托答辩 别管
 template BasePixelBT::BasePixel(const BasePixelST &);
 template BasePixelBT::BasePixel(const BasePixelIT &);
 template BasePixelBT::BasePixel(const BasePixelFT &);
@@ -83,10 +84,6 @@ BasePixelT::operator u32() {
   return RGBA(p.r, p.g, p.b, p.a);
 }
 
-template class BasePixelBT;
-template class BasePixelST;
-template class BasePixelIT;
-template class BasePixelFT;
-template class BasePixelDT;
+BasePixelInstantiation
 
 } // namespace pl2d

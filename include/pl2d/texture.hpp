@@ -5,6 +5,17 @@
 
 namespace pl2d {
 
+// 显式模板实例化
+#define BaseTextureInstantiation                                                                   \
+  template class BaseTexture<PixelB>;                                                              \
+  template class BaseTexture<PixelS>;                                                              \
+  template class BaseTexture<PixelF>;                                                              \
+  template class BaseTexture<PixelD>;
+
+// BaseTexture 参数约定：
+//   图像宽度与高度必须是 2 的整数倍
+//   否则请勿调用与 fft 相关的功能
+//
 // 所有返回 BaseTexture & 的函数返回的都是结构体自身
 // 可以用来实现链式调用
 
@@ -117,11 +128,15 @@ struct BaseTexture {
   auto fft() -> BaseTexture &; // 对图像进行快速傅里叶变换
   auto ift() -> BaseTexture &; // 对图像进行快速逆傅里叶变换
 
-  //% 缩放 resize会创建新对象 resize_to不会创建新对象
-  auto resize_to(float s) -> BaseTexture &;      // 缩放到 s 倍
-  auto resize_to(u32 w, u32 h) -> BaseTexture &; // 缩放到指定大小
-  auto resize(float s) -> BaseTexture *;         // 缩放到 s 倍
-  auto resize(u32 w, u32 h) -> BaseTexture *;    // 缩放到指定大小
+  auto fft_resize(float s) -> BaseTexture &;
+  auto fft_resize(u32 w, u32 h) -> BaseTexture &;
+  auto fft_resize_copy() -> BaseTexture *;
+
+  //% 缩放 resize_copy会创建新对象 resize不会创建新对象
+  auto resize(float s) -> BaseTexture &;           // 缩放到 s 倍
+  auto resize(u32 w, u32 h) -> BaseTexture &;      // 缩放到指定大小
+  auto resize_copy(float s) -> BaseTexture *;      // 缩放到 s 倍
+  auto resize_copy(u32 w, u32 h) -> BaseTexture *; // 缩放到指定大小
 
   //% 纹理内置的简单绘图函数
 

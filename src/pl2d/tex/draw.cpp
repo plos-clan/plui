@@ -45,9 +45,6 @@ auto BaseTexture<T>::fill_mix(RectI rect, const T &color) -> BaseTexture & {
   return *this;
 }
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
 } // namespace pl2d

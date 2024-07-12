@@ -108,6 +108,7 @@ void color_luv_interpolate(T *buf, size_t n, T src, T dst) {
   }
 }
 
+// 依托答辩 别管
 #define INSTANTIATION(_name_)                                                                      \
   template void _name_(PixelB *buf, size_t n, PixelB src, PixelB dst);                             \
   template void _name_(PixelS *buf, size_t n, PixelS src, PixelS dst);                             \

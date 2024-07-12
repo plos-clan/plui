@@ -307,10 +307,6 @@ void BasePixelT::RGB2LUV() {}
 template <BasePixelTemplate>
 void BasePixelT::LUV2RGB() {}
 
-template class BasePixelBT;
-template class BasePixelST;
-template class BasePixelIT;
-template class BasePixelFT;
-template class BasePixelDT;
+BasePixelInstantiation
 
 } // namespace pl2d

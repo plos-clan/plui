@@ -11,14 +11,11 @@ auto BaseTexture<T>::copy() -> BaseTexture<T> * {
   return d;
 }
 
-template class BaseTexture<PixelB>;
-template class BaseTexture<PixelS>;
-template class BaseTexture<PixelF>;
-template class BaseTexture<PixelD>;
+BaseTextureInstantiation
 
-template <typename T>
-template <typename T2>
-auto BaseTexture<T>::copy_from(const BaseTexture<T2> &d) -> bool {
+    template <typename T>
+    template <typename T2>
+    auto BaseTexture<T>::copy_from(const BaseTexture<T2> &d) -> bool {
   if (d.width != width || d.height != height) return false;
   if constexpr (std::is_same_v<T, T2>) {
     if (&d == this) return true;

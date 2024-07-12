@@ -37,10 +37,6 @@ auto BasePixelT::reverse_gamma() const -> BasePixel {
   return {_r, _g, _b, _a};
 }
 
-template class BasePixelBT;
-template class BasePixelST;
-template class BasePixelIT;
-template class BasePixelFT;
-template class BasePixelDT;
+BasePixelInstantiation
 
 } // namespace pl2d
