@@ -11,6 +11,10 @@ static const auto null = nullptr;
 #  define null 0
 #endif
 
+#if NO_STD
+#  define NULL 0
+#endif
+
 #ifndef __cplusplus
 #  define bool  _Bool
 #  define true  ((bool)1)
@@ -97,38 +101,42 @@ typedef __CHAR32_TYPE__ char32_t;
 typedef __WCHAR_TYPE__ wchar_t;
 #endif
 
-typedef __INT8_TYPE__     int8_t;
-typedef __UINT8_TYPE__    uint8_t;
-typedef __INT16_TYPE__    int16_t;
-typedef __UINT16_TYPE__   uint16_t;
-typedef __INT32_TYPE__    int32_t;
-typedef __UINT32_TYPE__   uint32_t;
-typedef __INT64_TYPE__    int64_t;
-typedef __UINT64_TYPE__   uint64_t;
+typedef __INT8_TYPE__   int8_t;
+typedef __UINT8_TYPE__  uint8_t;
+typedef __INT16_TYPE__  int16_t;
+typedef __UINT16_TYPE__ uint16_t;
+typedef __INT32_TYPE__  int32_t;
+typedef __UINT32_TYPE__ uint32_t;
+typedef __INT64_TYPE__  int64_t;
+typedef __UINT64_TYPE__ uint64_t;
+typedef float           float32_t;
+typedef double          float64_t;
+#if defined(__x86_64__)
 typedef __int128          int128_t;
 typedef unsigned __int128 uint128_t;
 typedef _Float16          float16_t;
-typedef float             float32_t;
-typedef double            float64_t;
 typedef __float128        float128_t;
+#endif
 
 typedef __INTMAX_TYPE__  intmax_t;
 typedef __UINTMAX_TYPE__ uintmax_t;
 
-typedef int8_t     i8;
-typedef uint8_t    u8;
-typedef int16_t    i16;
-typedef uint16_t   u16;
-typedef int32_t    i32;
-typedef uint32_t   u32;
-typedef int64_t    i64;
-typedef uint64_t   u64;
+typedef int8_t    i8;
+typedef uint8_t   u8;
+typedef int16_t   i16;
+typedef uint16_t  u16;
+typedef int32_t   i32;
+typedef uint32_t  u32;
+typedef int64_t   i64;
+typedef uint64_t  u64;
+typedef float32_t f32;
+typedef float64_t f64;
+#if defined(__x86_64__)
 typedef int128_t   i128;
 typedef uint128_t  u128;
 typedef float16_t  f16;
-typedef float32_t  f32;
-typedef float64_t  f64;
 typedef float128_t f128;
+#endif
 
 typedef intmax_t  imax_t;
 typedef uintmax_t umax_t;
@@ -148,11 +156,13 @@ typedef _Complex __INT32_TYPE__  cint32_t;
 typedef _Complex __UINT32_TYPE__ cuint32_t;
 typedef _Complex __INT64_TYPE__  cint64_t;
 typedef _Complex __UINT64_TYPE__ cuint64_t;
-typedef _Complex _Float16        cfloat16_t;
 typedef _Complex float           cfloat32_t;
 typedef _Complex double          cfloat64_t;
-#ifdef __clang__
+#if defined(__x86_64__)
+typedef _Complex _Float16 cfloat16_t;
+#  ifdef __clang__
 typedef _Complex __float128 cfloat128_t;
+#  endif
 #endif
 
 typedef cint8_t    ci8;
@@ -163,11 +173,13 @@ typedef cint32_t   ci32;
 typedef cuint32_t  cu32;
 typedef cint64_t   ci64;
 typedef cuint64_t  cu64;
-typedef cfloat16_t cf16;
 typedef cfloat32_t cf32;
 typedef cfloat64_t cf64;
-#ifdef __clang__
+#if defined(__x86_64__)
+typedef cfloat16_t cf16;
+#  ifdef __clang__
 typedef cfloat128_t cf128;
+#  endif
 #endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -200,12 +212,14 @@ __32(int32_t);
 __32(uint32_t);
 __16(int64_t);
 __16(uint64_t);
+__32(float32_t);
+__16(float64_t);
+#if defined(__x86_64__)
 __8(int128_t);
 __8(uint128_t);
 __64(float16_t);
-__32(float32_t);
-__16(float64_t);
 __8(float128_t);
+#endif
 
 __32(float);
 __16(double);
@@ -246,12 +260,14 @@ __32(i32);
 __32(u32);
 __16(i64);
 __16(u64);
+__32(f32);
+__16(f64);
+#if defined(__x86_64__)
 __8(i128);
 __8(u128);
 __64(f16);
-__32(f32);
-__16(f64);
 __8(f128);
+#endif
 
 #undef __16
 #undef __32
@@ -439,8 +455,10 @@ typedef _Atomic int32_t   atomic_int32_t;
 typedef _Atomic uint32_t  atomic_uint32_t;
 typedef _Atomic int64_t   atomic_int64_t;
 typedef _Atomic uint64_t  atomic_uint64_t;
+#  if defined(__x86_64__)
 typedef _Atomic int128_t  atomic_int128_t;
 typedef _Atomic uint128_t atomic_uint128_t;
+#  endif
 
 typedef _Atomic intmax_t  atomic_intmax_t;
 typedef _Atomic uintmax_t atomic_uintmax_t;
@@ -484,16 +502,18 @@ typedef atomic_ulong  atom_ulong;
 typedef atomic_llong  atom_llong;
 typedef atomic_ullong atom_ullong;
 
-typedef atomic_int8_t    atom_i8;
-typedef atomic_uint8_t   atom_u8;
-typedef atomic_int16_t   atom_i16;
-typedef atomic_uint16_t  atom_u16;
-typedef atomic_int32_t   atom_i32;
-typedef atomic_uint32_t  atom_u32;
-typedef atomic_int64_t   atom_i64;
-typedef atomic_uint64_t  atom_u64;
+typedef atomic_int8_t   atom_i8;
+typedef atomic_uint8_t  atom_u8;
+typedef atomic_int16_t  atom_i16;
+typedef atomic_uint16_t atom_u16;
+typedef atomic_int32_t  atom_i32;
+typedef atomic_uint32_t atom_u32;
+typedef atomic_int64_t  atom_i64;
+typedef atomic_uint64_t atom_u64;
+#if defined(__x86_64__)
 typedef atomic_int128_t  atom_i128;
 typedef atomic_uint128_t atom_u128;
+#endif
 
 typedef atomic_intmax_t  atom_imax_t;
 typedef atomic_uintmax_t atom_umax_t;

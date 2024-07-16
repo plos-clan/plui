@@ -33,7 +33,13 @@ BaseTexture<T>::BaseTexture(T *pixels, u32 width, u32 height, u32 pitch)
 
 template <typename T>
 BaseTexture<T>::~BaseTexture() {
-  if (own_pixels) free(pixels);
+  if (own_pixels) {
+    if (refcnted_pixels) {
+      _rc_unref(pixels);
+    } else {
+      free(pixels);
+    }
+  }
 }
 
 template <typename T>
@@ -79,6 +85,18 @@ template <typename T>
 auto BaseTexture<T>::reset() -> BaseTexture & {
   this->~BaseTexture();
   *this = {};
+  return *this;
+}
+
+template <typename T>
+auto BaseTexture<T>::exch(BaseTexture &tex) -> BaseTexture & {
+  cpp::exch(pixels, tex.pixels);
+  cpp::exch(own_pixels, tex.own_pixels);
+  cpp::exch(width, tex.width);
+  cpp::exch(height, tex.height);
+  cpp::exch(pitch, tex.pitch);
+  cpp::exch(size, tex.size);
+  cpp::exch(alloced_size, tex.alloced_size);
   return *this;
 }
 

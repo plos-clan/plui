@@ -1,6 +1,6 @@
 #pragma once
-#include <fcntl.h>
-#include <stddef.h>
+#include <define.h>
+#include <type.h>
 
 #ifdef ALL_IMPLEMENTATION
 #  define FILE_IMPLEMENTATION
@@ -21,6 +21,7 @@ extern void  unmap_file(void *ptr, size_t size);
 
 #ifdef FILE_IMPLEMENTATION
 
+#  include <fcntl.h>
 #  include <stdint.h>
 #  include <stdio.h>
 #  include <stdlib.h>

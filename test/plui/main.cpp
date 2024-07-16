@@ -62,7 +62,7 @@ auto init(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt) -> int {
     frame_tex[i].transform([](pl2d::PixelB &pix) {
       if (pix.brightness() > 240) pix = 0;
     });
-    // frame_tex[i].gaussian_blur(11, 2);
+    frame_tex[i].gaussian_blur(11, 2);
   }
 
   load_qoi_to_tex("test.qoi", image_tex);

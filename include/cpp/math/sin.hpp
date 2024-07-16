@@ -181,7 +181,7 @@ static auto atan(f64 x) -> f64 {
 #endif
 
 #if __has(atan2)
-static auto atan(f32 x, f32 y) -> f32 {
+static auto atan2(f32 x, f32 y) -> f32 {
   return __builtin_atan2f(x, y);
 }
 static auto atan2(f64 x, f64 y) -> f64 {
@@ -205,5 +205,12 @@ static auto atan2(f64 y, f64 x) -> f64 {
   return 0;
 }
 #endif
+
+static auto atan(f32 x, f32 y) -> f32 {
+  return atan2(x, y);
+}
+static auto atan(f64 x, f64 y) -> f64 {
+  return atan2(x, y);
+}
 
 } // namespace cpp

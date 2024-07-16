@@ -14,6 +14,7 @@
 #include "cpp/math/math.hpp"
 #include "cpp/math/sin.hpp"
 #include "cpp/math/sqrt.hpp"
+#include "cpp/math/sum.hpp"
 #include "cpp/property.hpp"
 #include "cpp/rbtree.hpp"
 #include "cpp/string.hpp"

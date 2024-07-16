@@ -21,13 +21,15 @@ namespace pl2d {
 
 template <typename T>
 struct BaseTexture {
-  T   *pixels       = null;  //
-  bool own_pixels   = false; // pixels 是否为该结构体所有
-  u32  width        = 0;     // 宽度
-  u32  height       = 0;     // 高度
-  u32  pitch        = 0;     // 每行实际的像素数
-  u32  size         = 0;     // 储存 height * pitch 而不是占用的字节数
-  u32  alloced_size = 0;     // 储存实际分配的大小 像素数而不是字节数
+  T   *pixels          = null;  // 可以是内部通过 malloc 分配，也可以是外部数据
+  bool own_pixels      = false; // pixels 是否为该结构体所有
+  bool refcnted_pixels = false; // pixels 是否使用引用计数
+  bool copy_on_write   = false; // 是否在写时拷贝对象（预留，当前无效）
+  u32  width           = 0;     // 宽度
+  u32  height          = 0;     // 高度
+  u32  pitch           = 0;     // 每行实际的像素数
+  u32  size            = 0;     // 储存 height * pitch 而不是占用的字节数
+  u32  alloced_size    = 0;     // 储存实际分配的大小 像素数而不是字节数
 
   BaseTexture() = default;
   BaseTexture(u32 width, u32 height);
@@ -41,6 +43,9 @@ struct BaseTexture {
   auto operator=(BaseTexture &&) noexcept -> BaseTexture &;      // 移动是可以的
 
   auto reset() -> BaseTexture &; // 重置 texture 为未初始化状态
+
+  // 与另一个纹理交换数据
+  auto exch(BaseTexture &tex) -> BaseTexture &;
 
   auto ready() const -> bool {
     return pixels != null;

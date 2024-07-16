@@ -3,7 +3,7 @@
 #include <osapi.h>
 #include <type.h>
 
-#ifdef __clang__
+#if defined(__clang__) && defined(__x86_64__)
 
 #  define bit_rev(n) (bit_reverse((u64)(n)) >> (64 - log_n))
 
