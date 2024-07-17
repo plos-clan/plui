@@ -7,13 +7,23 @@
 
 #ifndef __cplusplus
 #  if __has(clz)
-#    define clz(x)                                                                                 \
-      _Generic((x),                                                                                \
-          unsigned char: __builtin_clzs((ushort)(x)) - 8,                                          \
-          unsigned short: __builtin_clzs(x),                                                       \
-          unsigned int: __builtin_clz(x),                                                          \
-          unsigned long: __builtin_clzl(x),                                                        \
-          unsigned long long: __builtin_clzll(x))
+#    if defined(__GNUC__) && !defined(__clang__)
+#      define clz(x)                                                                               \
+        _Generic((x),                                                                              \
+            unsigned char: __builtin_clz((uint)(x)) - 24,                                          \
+            unsigned short: __builtin_clz((uint)(x)) - 16,                                         \
+            unsigned int: __builtin_clz(x),                                                        \
+            unsigned long: __builtin_clzl(x),                                                      \
+            unsigned long long: __builtin_clzll(x))
+#    else
+#      define clz(x)                                                                               \
+        _Generic((x),                                                                              \
+            unsigned char: __builtin_clzs((ushort)(x)) - 8,                                        \
+            unsigned short: __builtin_clzs(x),                                                     \
+            unsigned int: __builtin_clz(x),                                                        \
+            unsigned long: __builtin_clzl(x),                                                      \
+            unsigned long long: __builtin_clzll(x))
+#    endif
 #  else
 #    define __(TYPE, NAME)                                                                         \
       static int _##NAME(TYPE x) {                                                                 \

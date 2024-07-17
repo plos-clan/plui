@@ -6,7 +6,7 @@
 
 namespace pl2d {
 
-#if 0
+#if 1
 template <typename T>
 auto BaseTexture<T>::gaussian_blur(i32 size, f32 sigma) -> BaseTexture & {
   auto *tmp    = (PixelF *)malloc(cpp::max(width, height) * sizeof(PixelF));

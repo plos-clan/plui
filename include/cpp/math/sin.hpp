@@ -1,5 +1,6 @@
 #pragma once
 #include "base.hpp"
+#include "math.hpp"
 #include <define.h>
 #include <type.hpp>
 
@@ -17,6 +18,7 @@ static auto sin(f64 x) -> f64 {
 }
 #else
 static auto sin(f32 x) -> f32 {
+  x         = mod(x, (f32)(2 * PI));
   f32  sum  = x;
   f32  term = x;
   int  n    = 1;
@@ -30,6 +32,7 @@ static auto sin(f32 x) -> f32 {
   return sum;
 }
 static auto sin(f64 x) -> f64 {
+  x         = mod(x, 2 * PI);
   f64  sum  = x;
   f64  term = x;
   int  n    = 1;
@@ -53,6 +56,7 @@ static auto cos(f64 x) -> f64 {
 }
 #else
 static auto cos(f32 x) -> f32 {
+  x         = mod(x, (f32)(2 * PI));
   f32  sum  = 1;
   f32  term = 1;
   int  n    = 0;
@@ -66,6 +70,7 @@ static auto cos(f32 x) -> f32 {
   return sum;
 }
 static auto cos(f64 x) -> f64 {
+  x         = mod(x, 2 * PI);
   f64  sum  = 1;
   f64  term = 1;
   int  n    = 0;

@@ -107,10 +107,11 @@ void screen_flush() {
   while (true) {
     time       = monotonic_us();
     frame_time = time - old_time;
+    break;
     if (frame_time >= 16667) break;
     usleep(16667 - frame_time);
   }
-  // printf("%lf\n", 1e6 / frame_time);
+  printf("%lf\n", 1e6 / frame_time);
   old_time = time;
 }
 

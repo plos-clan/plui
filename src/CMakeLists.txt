@@ -1,7 +1,9 @@
-set(CMAKE_C_FLAGS "-nostdlib ${CMAKE_C_FLAGS} -ffreestanding -fno-stack-protector -fno-pic -fno-pie -fno-asynchronous-unwind-tables -fomit-frame-pointer")
-set(CMAKE_CXX_FLAGS "-nostdlib -nostdlib++ ${CMAKE_CXX_FLAGS} -ffreestanding -fno-stack-protector -fno-pic -fno-pie -fno-asynchronous-unwind-tables -fomit-frame-pointer")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-nolibc -Qn")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "-nolibc -nolibc++ -Qn")
+set(CMAKE_C_FLAGS "-nostdlib ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-nostdlib -nostdlib++ ${CMAKE_CXX_FLAGS}")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffreestanding -fno-stack-protector -fno-pic -fno-pie -fno-asynchronous-unwind-tables -fomit-frame-pointer")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffreestanding -fno-stack-protector -fno-pic -fno-pie -fno-asynchronous-unwind-tables -fomit-frame-pointer")
+# set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-nolibc -Qn")
+# set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "-nolibc -nolibc++ -Qn")
 
 add_subdirectory(c)
 add_subdirectory(cpp)

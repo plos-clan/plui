@@ -9,12 +9,21 @@ namespace cpp {
 //; clz
 
 #if __has(clz)
+#  if defined(__GNUC__) && !defined(__clang__)
+finline auto clz(u8 x) -> int {
+  return __builtin_clz((u32)x) - 24;
+}
+finline auto clz(u16 x) -> int {
+  return __builtin_clz((u32)x) - 16;
+}
+#  else
 finline auto clz(u8 x) -> int {
   return __builtin_clzs((u16)(x)) - 8;
 }
 finline auto clz(u16 x) -> int {
   return __builtin_clzs(x);
 }
+#  endif
 finline auto clz(u32 x) -> int {
   return __builtin_clz(x);
 }

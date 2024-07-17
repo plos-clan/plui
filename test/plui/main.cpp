@@ -45,7 +45,8 @@ pl2d::TextureB frame_tex[19];
 static auto &fb  = screen_fb;
 static auto &tex = screen_tex;
 
-auto load_qoi_to_tex(const char *filename, pl2d::TextureB &tex) {
+template <typename T>
+auto load_qoi_to_tex(const char *filename, T &tex) {
   int   img_width, img_height, img_channels;
   void *data = qoi_load(filename, &img_width, &img_height, &img_channels);
   if (data == null) abort();
@@ -59,21 +60,13 @@ auto load_qoi_to_tex(const char *filename, pl2d::TextureB &tex) {
 auto init(void *buffer, u32 width, u32 height, pl2d::PixFmt fmt) -> int {
   for (int i = 0; i < 18; i++) {
     load_qoi_to_tex(("frame" + std::to_string(i) + ".qoi").c_str(), frame_tex[i]);
-    frame_tex[i].transform([](pl2d::PixelB &pix) {
+    frame_tex[i].transform([](auto &pix) {
       if (pix.brightness() > 240) pix = 0;
     });
     frame_tex[i].gaussian_blur(11, 2);
   }
 
   load_qoi_to_tex("test.qoi", image_tex);
-  pl2d::TextureF tmp(image_tex.width, image_tex.height);
-  image_tex.copy_to(tmp);
-  tmp.fft();
-  pl2d::TextureF tmp2(tmp.width * 2, tmp.height * 2);
-  tmp.paste_to(tmp2, 0, 0);
-  tmp2.ift();
-  image_tex = {tmp2.width, tmp2.height};
-  tmp2.copy_to(image_tex);
 
   return on::screen_resize(buffer, width, height, fmt);
 }
@@ -87,7 +80,7 @@ void flush() {
   pl2d::PixelF p = {.8, cpp::cos(i) * .1f, cpp::sin(i) * .1f, 1};
   p.LAB2RGB();
   tex.fill(p);
-  tex.transform([](pl2d::PixelB &pix, i32 x, i32 y) {
+  tex.transform([](auto &pix, i32 x, i32 y) {
     if ((x + y) / 25 % 2 == 0) pix.mix_ratio(0xffffffff, 64);
   });
   frame_tex[nframe / 60 % 19].paste_to_mix(tex, 20, 20);

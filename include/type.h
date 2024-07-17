@@ -42,16 +42,16 @@ static const auto null = nullptr;
 #undef INT64_MAX
 #undef UINT64_MAX
 
-#define INT8_MIN   __INT8_MIN__
+#define INT8_MIN   (-__INT8_MAX__ - 1)
 #define INT8_MAX   __INT8_MAX__
 #define UINT8_MAX  __UINT8_MAX__
-#define INT16_MIN  __INT16_MIN__
+#define INT16_MIN  (-__INT16_MAX__ - 1)
 #define INT16_MAX  __INT16_MAX__
 #define UINT16_MAX __UINT16_MAX__
-#define INT32_MIN  __INT32_MIN__
+#define INT32_MIN  (-__INT32_MAX__ - 1)
 #define INT32_MAX  __INT32_MAX__
 #define UINT32_MAX __UINT32_MAX__
-#define INT64_MIN  __INT64_MIN__
+#define INT64_MIN  (-__INT64_MAX__ - 1)
 #define INT64_MAX  __INT64_MAX__
 #define UINT64_MAX __UINT64_MAX__
 
@@ -59,24 +59,24 @@ static const auto null = nullptr;
 #undef INTMAX_MAX
 #undef UINTMAX_MAX
 
-#define INTMAX_MIN  __INTMAX_MIN__
+#define INTMAX_MIN  (-__INTMAX_MAX__ - 1)
 #define INTMAX_MAX  __INTMAX_MAX__
 #define UINTMAX_MAX __UINTMAX_MAX__
 
-#define I8_MIN  __INT8_MIN__
+#define I8_MIN  (-__INT8_MAX__ - 1)
 #define I8_MAX  __INT8_MAX__
 #define U8_MAX  __UINT8_MAX__
-#define I16_MIN __INT16_MIN__
+#define I16_MIN (-__INT16_MAX__ - 1)
 #define I16_MAX __INT16_MAX__
 #define U16_MAX __UINT16_MAX__
-#define I32_MIN __INT32_MIN__
+#define I32_MIN (-__INT32_MAX__ - 1)
 #define I32_MAX __INT32_MAX__
 #define U32_MAX __UINT32_MAX__
-#define I64_MIN __INT64_MIN__
+#define I64_MIN (-__INT64_MAX__ - 1)
 #define I64_MAX __INT64_MAX__
 #define U64_MAX __UINT64_MAX__
 
-#define IMAX_MIN __INTMAX_MIN__
+#define IMAX_MIN (-__INTMAX_MAX__ - 1)
 #define IMAX_MAX __INTMAX_MAX__
 #define UMAX_MAX __UINTMAX_MAX__
 
@@ -406,16 +406,18 @@ typedef __atomic_base<unsigned long>      atomic_ulong;
 typedef __atomic_base<long long>          atomic_llong;
 typedef __atomic_base<unsigned long long> atomic_ullong;
 
-typedef __atomic_base<int8_t>    atomic_int8_t;
-typedef __atomic_base<uint8_t>   atomic_uint8_t;
-typedef __atomic_base<int16_t>   atomic_int16_t;
-typedef __atomic_base<uint16_t>  atomic_uint16_t;
-typedef __atomic_base<int32_t>   atomic_int32_t;
-typedef __atomic_base<uint32_t>  atomic_uint32_t;
-typedef __atomic_base<int64_t>   atomic_int64_t;
-typedef __atomic_base<uint64_t>  atomic_uint64_t;
+typedef __atomic_base<int8_t>   atomic_int8_t;
+typedef __atomic_base<uint8_t>  atomic_uint8_t;
+typedef __atomic_base<int16_t>  atomic_int16_t;
+typedef __atomic_base<uint16_t> atomic_uint16_t;
+typedef __atomic_base<int32_t>  atomic_int32_t;
+typedef __atomic_base<uint32_t> atomic_uint32_t;
+typedef __atomic_base<int64_t>  atomic_int64_t;
+typedef __atomic_base<uint64_t> atomic_uint64_t;
+#  if defined(__x86_64__)
 typedef __atomic_base<int128_t>  atomic_int128_t;
 typedef __atomic_base<uint128_t> atomic_uint128_t;
+#  endif
 
 typedef __atomic_base<intmax_t>  atomic_intmax_t;
 typedef __atomic_base<uintmax_t> atomic_uintmax_t;
